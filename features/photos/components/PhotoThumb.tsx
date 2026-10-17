@@ -19,7 +19,7 @@ export function PhotoThumb({ photo, fill = false, priority = false, className }:
       <Link
         href={`/photos/${photo.id}`}
         className={cn(
-          "group relative block aspect-[3/2] overflow-hidden bg-muted",
+          "group relative isolate block aspect-[3/2] overflow-hidden rounded-xl bg-muted",
           fill && "md:aspect-auto md:min-h-96 md:flex-1",
         )}
       >
@@ -28,7 +28,7 @@ export function PhotoThumb({ photo, fill = false, priority = false, className }:
           alt={photo.alt}
           fill
           priority={priority}
-          sizes="(min-width: 768px) 50vw, 100vw"
+          sizes="(min-width: 1280px) 768px, (min-width: 768px) 60vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
         />
         <span className="absolute inset-x-0 bottom-0 hidden items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition-opacity group-hover:opacity-100 md:flex">

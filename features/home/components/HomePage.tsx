@@ -23,11 +23,14 @@ export async function HomePage({ category }: HomePageProps) {
       </div>
 
       <section className="px-4 pb-16 pt-4 md:px-16 md:pb-24 md:pt-6">
-        <div className="mb-4 flex justify-between">
-          <Eyebrow>{photos.length} photos</Eyebrow>
-          <Eyebrow>Plus récentes d’abord</Eyebrow>
+        {/* Largeur limitée : sur grand écran la galerie reste lisible d'un coup d'œil. */}
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="mb-4 flex justify-between">
+            <Eyebrow>{photos.length} photos</Eyebrow>
+            <Eyebrow>Plus récentes d’abord</Eyebrow>
+          </div>
+          <PhotoMosaic photos={photos} />
         </div>
-        <PhotoMosaic photos={photos} />
       </section>
     </>
   );
