@@ -1,29 +1,50 @@
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+import sharp from "sharp"
 
+export const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+/** Plus grand côté de la photo enregistrée. Assez pour un écran large, bien plus léger que l'original. */
+export const MAX_DIMENSION = 2000
+
+/** Toute photo est enregistrée en WebP : c'est ce qui part dans le bucket. */
 export interface ValidImage {
   bytes: Uint8Array
-  extension: "jpg" | "png" | "webp"
-  contentType: "image/jpeg" | "image/png" | "image/webp"
+  extension: "webp"
+  contentType: "image/webp"
 }
 
 const startsWith = (bytes: Uint8Array, signature: number[], offset = 0) =>
   signature.every((byte, i) => bytes[offset + i] === byte)
 
 /** Le type vient du contenu (octets magiques), jamais du nom ni du type annoncé par le navigateur. */
-function detectType(bytes: Uint8Array): Omit<ValidImage, "bytes"> | null {
-  if (startsWith(bytes, [0xff, 0xd8, 0xff])) return { extension: "jpg", contentType: "image/jpeg" }
-  if (startsWith(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return { extension: "png", contentType: "image/png" }
-  if (startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) && startsWith(bytes, [0x57, 0x45, 0x42, 0x50], 8))
-    return { extension: "webp", contentType: "image/webp" }
-  return null
+function isSupportedImage(bytes: Uint8Array) {
+  return (
+    startsWith(bytes, [0xff, 0xd8, 0xff]) || // JPEG
+    startsWith(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]) || // PNG
+    (startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) && startsWith(bytes, [0x57, 0x45, 0x42, 0x50], 8)) // WebP
+  )
 }
 
-/** Retourne `null` si aucun fichier n'a été choisi, sinon l'image ou un message d'erreur. */
+/**
+ * Redimensionne et convertit en WebP. Remet la photo à l'endroit (EXIF) puis efface les métadonnées,
+ * dont la position GPS : rien de ce qui est enregistré ne révèle où la photo a été prise.
+ */
+export async function optimizeImage(bytes: Uint8Array): Promise<Uint8Array> {
+  const output = await sharp(bytes)
+    .rotate()
+    .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toBuffer()
+  return new Uint8Array(output)
+}
+
+/** Retourne `null` si aucun fichier n'a été choisi, sinon l'image prête à enregistrer ou un message d'erreur. */
 export async function readImage(value: FormDataEntryValue | null): Promise<ValidImage | { error: string } | null> {
   if (!(value instanceof File) || value.size === 0) return null
   if (value.size > MAX_IMAGE_BYTES) return { error: "La photo dépasse 8 Mo. Choisissez une version plus légère." }
   const bytes = new Uint8Array(await value.arrayBuffer())
-  const type = detectType(bytes)
-  if (!type) return { error: "Ce fichier n'est pas une photo JPEG, PNG ou WebP." }
-  return { bytes, ...type }
+  if (!isSupportedImage(bytes)) return { error: "Ce fichier n'est pas une photo JPEG, PNG ou WebP." }
+  try {
+    return { bytes: await optimizeImage(bytes), extension: "webp", contentType: "image/webp" }
+  } catch {
+    return { error: "Cette photo n'a pas pu être lue. Essayez un autre fichier." }
+  }
 }
