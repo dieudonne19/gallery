@@ -1,0 +1,17 @@
+import type { Metadata } from "next"
+
+import { AdminHeader } from "@/components/layout/AdminHeader"
+
+export const metadata: Metadata = {
+  title: { default: "Administration", template: "%s · Administration" },
+  robots: { index: false, follow: false },
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <AdminHeader />
+      <main className="flex-1 px-4 py-8 md:px-16 md:py-12">{children}</main>
+    </div>
+  )
+}

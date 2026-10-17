@@ -40,6 +40,7 @@ export function PhotoMosaic({ photos }: { photos: Photo[] }) {
             <PhotoThumb
               photo={big}
               fill
+              priority={index === 0}
               className={cn(
                 "col-span-2 md:col-span-1 md:row-span-2",
                 flip ? "order-last md:order-none md:col-start-2" : "md:col-start-1",

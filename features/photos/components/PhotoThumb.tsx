@@ -8,10 +8,12 @@ interface PhotoThumbProps {
   photo: Photo;
   /** Grande vignette : remplit la hauteur de sa zone sur desktop. */
   fill?: boolean;
+  /** Première photo visible : chargée en priorité. */
+  priority?: boolean;
   className?: string;
 }
 
-export function PhotoThumb({ photo, fill = false, className }: PhotoThumbProps) {
+export function PhotoThumb({ photo, fill = false, priority = false, className }: PhotoThumbProps) {
   return (
     <figure className={cn("flex flex-col", className)}>
       <Link
@@ -25,6 +27,7 @@ export function PhotoThumb({ photo, fill = false, className }: PhotoThumbProps) 
           src={photo.src}
           alt={photo.alt}
           fill
+          priority={priority}
           sizes="(min-width: 768px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
         />

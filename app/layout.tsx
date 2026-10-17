@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { DM_Mono, DM_Sans, Fraunces } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
 const fontSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -29,11 +28,10 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      suppressHydrationWarning
       className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} font-sans antialiased`}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
         <Toaster />
       </body>
     </html>

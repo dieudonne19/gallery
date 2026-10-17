@@ -1,6 +1,7 @@
 import { cache } from "react";
 
 import { sql } from "@/lib/db";
+import { getPhotoUrl } from "@/lib/storage";
 import { CATEGORIES } from "../data/categories";
 import type { CategoryId, Photo } from "../types";
 
@@ -14,9 +15,9 @@ interface PhotoRow {
   year: number | null;
 }
 
-// Les colonnes facultatives vides (null en base) deviennent absentes.
-function toPhoto(row: PhotoRow): Photo {
-  return { ...row, place: row.place ?? undefined, year: row.year ?? undefined };
+// Les colonnes facultatives vides (null en base) deviennent absentes ; src devient une URL affichable.
+async function toPhoto(row: PhotoRow): Promise<Photo> {
+  return { ...row, src: await getPhotoUrl(row.src), place: row.place ?? undefined, year: row.year ?? undefined };
 }
 
 // cache() : une seule requête par rendu, même si plusieurs composants la demandent.
@@ -25,7 +26,7 @@ const getAllPhotos = cache(async (): Promise<Photo[]> => {
     select id, src, title, alt, category, place, year
     from photos
     order by position, created_at desc`;
-  return (rows as PhotoRow[]).map(toPhoto);
+  return Promise.all((rows as PhotoRow[]).map(toPhoto));
 });
 
 export async function getPhotos(category?: CategoryId): Promise<Photo[]> {

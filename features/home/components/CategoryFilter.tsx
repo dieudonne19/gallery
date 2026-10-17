@@ -14,7 +14,8 @@ export function CategoryFilter({ active }: CategoryFilterProps) {
   return (
     <nav
       aria-label="Catégories"
-      className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden"
+      // Mobile : centré s'il tient, sinon défile (marges auto sur les extrémités). Bureau : lignes centrées.
+      className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-center md:px-0 [&::-webkit-scrollbar]:hidden [&>:first-child]:ml-auto [&>:last-child]:mr-auto md:[&>:first-child]:ml-0 md:[&>:last-child]:mr-0"
     >
       <Link
         href="/"

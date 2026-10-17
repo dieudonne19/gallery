@@ -2,6 +2,7 @@ import { Eyebrow } from "@/components/shared/Eyebrow";
 import { getPhotos } from "@/features/photos/lib/queries";
 import type { CategoryId } from "@/features/photos/types";
 import { CategoryFilter } from "./CategoryFilter";
+import { HomeHero } from "./HomeHero";
 import { PhotoMosaic } from "./PhotoMosaic";
 
 interface HomePageProps {
@@ -14,9 +15,10 @@ export async function HomePage({ category }: HomePageProps) {
 
   return (
     <>
-      <h1 className="sr-only">Photographies de paysages</h1>
+      <HomeHero />
 
-      <div className="sticky top-(--header-h) z-30 bg-background px-4 py-2 md:px-16 md:py-3">
+      {/* Filtre sticky : se cale sous le header fixe (--header-h) pendant le défilement de la galerie. */}
+      <div className="sticky top-(--header-h) z-30 border-b border-border bg-background px-4 py-2 md:px-16 md:py-3">
         <CategoryFilter active={category} />
       </div>
 

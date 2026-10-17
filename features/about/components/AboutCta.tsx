@@ -14,7 +14,7 @@ export function AboutCta() {
       <Button
         nativeButton={false}
         render={<Link href="/contact" />}
-        className="h-[52px] rounded-sm px-8 text-base"
+        className="h-[52px] px-8 text-base"
       >
         Me contacter
       </Button>

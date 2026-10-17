@@ -12,7 +12,7 @@ export function PostcardActions({ whatsappUrl, mailtoUrl }: PostcardActionsProps
       <Button
         nativeButton={false}
         render={<a href={whatsappUrl} target="_blank" rel="noreferrer" />}
-        className="h-[52px] rounded-sm px-8 text-base"
+        className="h-[52px] px-8 text-base"
       >
         Poster sur WhatsApp
       </Button>
