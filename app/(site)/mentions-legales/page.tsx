@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LEGAL } from "@/features/legal/config";
+import { pageMetadata } from "@/lib/metadata";
 import { LegalPage, LegalSection, legalLink } from "@/features/legal/components/LegalPage";
 
-export const metadata: Metadata = { title: "Mentions légales" };
+export const metadata: Metadata = pageMetadata(
+  "Mentions légales",
+  "Éditeur du site, propriété intellectuelle, données personnelles et cookies.",
+);
 
 export default function Page() {
   const { editor, email, host, updatedAt } = LEGAL;

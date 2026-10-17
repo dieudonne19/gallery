@@ -12,7 +12,8 @@ import { readImage } from "../lib/image"
 import { parsePhotoForm, type PhotoFormState } from "../schemas"
 
 // Dev et prod partagent le même bucket : le préfixe évite de mélanger leurs fichiers.
-const KEY_PREFIX = process.env.NODE_ENV === "production" ? "prod" : "dev"
+// Sur Vercel, NODE_ENV vaut "production" même pour un déploiement de test (preview) : VERCEL_ENV les distingue.
+const KEY_PREFIX = (process.env.VERCEL_ENV ?? process.env.NODE_ENV) === "production" ? "prod" : "dev"
 const newKey = (extension: string) => `${KEY_PREFIX}/photos/${randomBytes(8).toString("hex")}.${extension}`
 
 const refreshPages = () => revalidatePath("/", "layout")
