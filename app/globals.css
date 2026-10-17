@@ -24,6 +24,14 @@
   --input: #d8d2c2;
   --ring: #b4532a;
   --radius: 0.125rem;
+  /* Hauteur du header fixe : le filtre sticky se cale dessous. */
+  --header-h: 3.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 4rem;
+  }
 }
 
 .dark {

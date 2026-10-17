@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { buildMailtoUrl } from "../lib/mailto";
 import { buildWhatsAppUrl } from "../lib/whatsapp";
@@ -22,7 +23,7 @@ export function PostcardForm({ backdropSrc, stampSrc, initialPhoto = "" }: Postc
   return (
     <>
       <div className="relative flex items-center justify-center overflow-hidden bg-muted px-4 py-8 md:px-16 md:py-[72px]">
-        <img src={backdropSrc} alt="" className="absolute inset-0 size-full object-cover" />
+        <Image src={backdropSrc} alt="" fill sizes="100vw" className="object-cover" />
         <div className="relative flex w-full justify-center">
           <Postcard value={draft} onChange={setDraft} stampSrc={stampSrc} />
         </div>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import { Eyebrow } from "@/components/shared/Eyebrow";
 import type { Photo } from "@/features/photos/types";
 
@@ -8,17 +10,21 @@ interface PhotoNavProps {
 
 function NavItem({ photo, label, align }: { photo: Photo; label: string; align: "start" | "end" }) {
   return (
-    <a
+    <Link
       href={`/photos/${photo.id}`}
       className={`flex flex-col gap-3 ${align === "end" ? "items-end" : "items-start"}`}
     >
       <Eyebrow>{label}</Eyebrow>
-      <img
-        src={photo.src}
-        alt={photo.alt}
-        className="aspect-[3/2] w-full bg-muted object-cover md:w-[280px]"
-      />
-    </a>
+      <div className="relative aspect-[3/2] w-full bg-muted md:w-[280px]">
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          fill
+          sizes="(min-width: 768px) 280px, 50vw"
+          className="object-cover"
+        />
+      </div>
+    </Link>
   );
 }
 

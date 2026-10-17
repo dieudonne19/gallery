@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Eyebrow } from "@/components/shared/Eyebrow";
 import type { Photo } from "@/features/photos/types";
 import { ShareButton } from "./ShareButton";
@@ -17,12 +18,12 @@ export function PhotoCaption({ photo }: { photo: Photo }) {
 
       <div className="flex gap-6">
         <ShareButton title={photo.title} />
-        <a
+        <Link
           href={`/contact?photo=${encodeURIComponent(photo.id)}`}
           className="flex min-h-11 items-center underline underline-offset-4"
         >
           Écrire à propos de cette photo
-        </a>
+        </Link>
       </div>
     </section>
   );

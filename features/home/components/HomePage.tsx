@@ -16,11 +16,11 @@ export function HomePage({ category }: HomePageProps) {
     <>
       <h1 className="sr-only">Photographies de paysages</h1>
 
-      <div className="px-4 pt-2 md:px-16 md:pt-8">
+      <div className="sticky top-(--header-h) z-30 bg-background px-4 py-2 md:px-16 md:py-3">
         <CategoryFilter active={category} />
       </div>
 
-      <section className="px-4 pb-16 pt-6 md:px-16 md:pb-24 md:pt-8">
+      <section className="px-4 pb-16 pt-4 md:px-16 md:pb-24 md:pt-6">
         <div className="mb-4 flex justify-between">
           <Eyebrow>{photos.length} photos</Eyebrow>
           <Eyebrow>Plus récentes d’abord</Eyebrow>

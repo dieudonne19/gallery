@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 
 export function ShareButton({ title }: { title: string }) {
@@ -14,6 +16,7 @@ export function ShareButton({ title }: { title: string }) {
       return;
     }
     await navigator.clipboard.writeText(url);
+    toast.success("Lien copié");
   }
 
   return (

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Eyebrow } from "@/components/shared/Eyebrow";
 
 interface PostcardStampProps {
@@ -15,11 +16,9 @@ export function PostcardStamp({ src, place = "[Lieu]", date = "[Date]" }: Postca
         <br />
         {date}
       </Eyebrow>
-      <img
-        src={src}
-        alt=""
-        className="aspect-[4/5] w-[72px] border-2 border-dashed border-muted-foreground bg-muted object-cover p-1 md:w-24"
-      />
+      <div className="relative aspect-[4/5] w-[72px] border-2 border-dashed border-muted-foreground bg-muted p-1 md:w-24">
+        <Image src={src} alt="" fill sizes="96px" className="object-cover p-1" />
+      </div>
     </div>
   );
 }

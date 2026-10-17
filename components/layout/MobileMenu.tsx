@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTitle,
   SheetTrigger,
@@ -28,13 +30,14 @@ export function MobileMenu() {
         </SheetTitle>
         <nav className="flex flex-col px-6 pt-4">
           {NAV_LINKS.map((link) => (
-            <a
+            <SheetClose
               key={link.href}
-              href={link.href}
+              nativeButton={false}
+              render={<Link href={link.href} />}
               className="flex min-h-12 items-center text-xl"
             >
               {link.label}
-            </a>
+            </SheetClose>
           ))}
         </nav>
       </SheetContent>

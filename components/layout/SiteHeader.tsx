@@ -1,22 +1,24 @@
+import Link from "next/link";
 import { MobileMenu } from "./MobileMenu";
 import { NAV_LINKS, SITE_NAME } from "./nav";
 
 export function SiteHeader() {
+  // Header fixe : même comportement sur le site et dans /admin.
   return (
-    <header className="flex items-center justify-between border-b border-border px-4 py-3 md:px-16 md:py-5">
-      <a href="/" className="font-serif text-xl">
+    <header className="sticky top-0 z-40 flex h-(--header-h) items-center justify-between border-b border-border bg-background px-4 md:px-16">
+      <Link href="/" className="flex min-h-11 items-center font-serif text-xl">
         {SITE_NAME}
-      </a>
+      </Link>
 
       <nav aria-label="Navigation principale" className="hidden items-center gap-7 md:flex">
         {NAV_LINKS.map((link) => (
-          <a
+          <Link
             key={link.href}
             href={link.href}
             className="flex min-h-11 items-center underline-offset-4 hover:underline"
           >
             {link.label}
-          </a>
+          </Link>
         ))}
       </nav>
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { CATEGORIES } from "@/features/photos/data/photos";
 import type { CategoryId } from "@/features/photos/types";
@@ -15,15 +16,15 @@ export function CategoryFilter({ active }: CategoryFilterProps) {
       aria-label="Catégories"
       className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden"
     >
-      <a
+      <Link
         href="/"
         aria-current={!active ? "page" : undefined}
         className={cn(chip, !active && "border-foreground bg-foreground text-background")}
       >
         Tout
-      </a>
+      </Link>
       {CATEGORIES.map((category) => (
-        <a
+        <Link
           key={category.id}
           href={`/?categorie=${category.id}`}
           aria-current={active === category.id ? "page" : undefined}
@@ -33,7 +34,7 @@ export function CategoryFilter({ active }: CategoryFilterProps) {
           )}
         >
           {category.label}
-        </a>
+        </Link>
       ))}
     </nav>
   );
