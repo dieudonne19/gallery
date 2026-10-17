@@ -1,9 +1,10 @@
-import { Eyebrow } from "@/components/shared/Eyebrow";
-import { getPhotos } from "@/features/photos/lib/queries";
+import { Suspense } from "react";
+
 import type { CategoryId } from "@/features/photos/types";
 import { CategoryFilter } from "./CategoryFilter";
+import { GallerySkeleton } from "./GallerySkeleton";
+import { HomeGallery } from "./HomeGallery";
 import { HomeHero } from "./HomeHero";
-import { PhotoMosaic } from "./PhotoMosaic";
 import { WordsMarquee } from "./WordsMarquee";
 
 interface HomePageProps {
@@ -11,11 +12,10 @@ interface HomePageProps {
   category?: CategoryId;
 }
 
-export async function HomePage({ category }: HomePageProps) {
-  const photos = await getPhotos(category);
-
+export function HomePage({ category }: HomePageProps) {
   return (
     <>
+      {/* La hero, le filtre et le bandeau ne dépendent pas de la base : ils s'affichent tout de suite. */}
       <HomeHero />
 
       {/* Filtre sticky : se cale sous le header fixe (--header-h) pendant le défilement de la galerie. */}
@@ -25,16 +25,9 @@ export async function HomePage({ category }: HomePageProps) {
 
       <WordsMarquee />
 
-      <section className="px-4 pb-16 pt-4 md:px-16 md:pb-24 md:pt-6">
-        {/* Largeur limitée : sur grand écran la galerie reste lisible d'un coup d'œil. */}
-        <div className="mx-auto w-full max-w-6xl">
-          <div className="mb-4 flex justify-between">
-            <Eyebrow>{photos.length} photos</Eyebrow>
-            <Eyebrow>Plus récentes d’abord</Eyebrow>
-          </div>
-          <PhotoMosaic photos={photos} />
-        </div>
-      </section>
+      <Suspense fallback={<GallerySkeleton />}>
+        <HomeGallery category={category} />
+      </Suspense>
     </>
   );
 }

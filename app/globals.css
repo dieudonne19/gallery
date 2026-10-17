@@ -22,7 +22,8 @@
   --accent-foreground: #1e2a2b;
   --destructive: #b3261e;
   --border: #d8d2c2;
-  --input: #d8d2c2;
+  /* Bordure des champs : 3,4:1 sur le fond (seuil WCAG 1.4.11 = 3:1), contrairement aux séparateurs. */
+  --input: #8a8474;
   --ring: #b4532a;
   --radius: 0.5rem;
   color-scheme: light;
@@ -73,6 +74,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Focus clavier visible partout (liens, boutons) ; les composants shadcn gardent leur propre anneau. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 

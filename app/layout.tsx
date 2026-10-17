@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { DM_Mono, DM_Sans, Fraunces } from "next/font/google"
 
 import "./globals.css"
+import { SkipLink } from "@/components/shared/SkipLink"
 import { Toaster } from "@/components/ui/sonner"
 
 const fontSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -31,6 +32,7 @@ export default function RootLayout({
       className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} font-sans antialiased`}
     >
       <body>
+        <SkipLink />
         {children}
         <Toaster />
       </body>
