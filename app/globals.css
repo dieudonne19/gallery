@@ -90,3 +90,32 @@
     }
   }
 }
+
+/* Bandeau défilant (WordsMarquee) : deux copies identiques, la piste glisse de -50 %. */
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 130s linear infinite;
+}
+
+/* Pause au survol pour pouvoir lire. */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Mouvement réduit : plus de défilement, les trois mots restent fixes et centrés. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+  .marquee-copy:nth-child(2),
+  .marquee-extra {
+    display: none;
+  }
+}

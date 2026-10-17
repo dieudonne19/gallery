@@ -4,6 +4,7 @@ import type { CategoryId } from "@/features/photos/types";
 import { CategoryFilter } from "./CategoryFilter";
 import { HomeHero } from "./HomeHero";
 import { PhotoMosaic } from "./PhotoMosaic";
+import { WordsMarquee } from "./WordsMarquee";
 
 interface HomePageProps {
   /** Catégorie active (ex. lue dans ?categorie=). */
@@ -21,6 +22,8 @@ export async function HomePage({ category }: HomePageProps) {
       <div className="sticky top-(--header-h) z-30 border-b border-border bg-background px-4 py-2 md:px-16 md:py-3">
         <CategoryFilter active={category} />
       </div>
+
+      <WordsMarquee />
 
       <section className="px-4 pb-16 pt-4 md:px-16 md:pb-24 md:pt-6">
         {/* Largeur limitée : sur grand écran la galerie reste lisible d'un coup d'œil. */}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { HeroScenes } from "./HeroScenes";
 
-// Moment fort de la page : colline, montagne, vague puis lune se dessinent (HeroScenes, gsap).
+// Moment fort de la page : montagne, vague puis lune se dessinent (HeroScenes, gsap).
 // Les textes n'ont qu'un fondu discret (.hero-reveal dans globals.css).
 const reveal = (index: number) => ({ "--i": index }) as React.CSSProperties;
 
