@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 
 import { SmoothScroll } from "@/components/shared/SmoothScroll";
-import type { CategoryId } from "@/features/photos/types";
-import { CategoryFilter } from "./CategoryFilter";
+import { CategoryFilterBar } from "./CategoryFilterBar";
+import { FilterSkeleton } from "./FilterSkeleton";
 import { GallerySkeleton } from "./GallerySkeleton";
 import { HomeGallery } from "./HomeGallery";
 import { HomeHero } from "./HomeHero";
 import { WordsMarquee } from "./WordsMarquee";
 
 interface HomePageProps {
-  /** Catégorie active (ex. lue dans ?categorie=). */
-  category?: CategoryId;
+  /** Catégorie demandée dans l'adresse (?categorie=). Vérifiée plus loin, avec la base. */
+  category?: string;
 }
 
 export function HomePage({ category }: HomePageProps) {
@@ -23,7 +23,9 @@ export function HomePage({ category }: HomePageProps) {
 
       {/* Filtre sticky : se cale sous le header fixe (--header-h) pendant le défilement de la galerie. */}
       <div className="sticky top-(--header-h) z-30 border-b border-border bg-background px-4 py-2 md:px-16 md:py-3">
-        <CategoryFilter active={category} />
+        <Suspense fallback={<FilterSkeleton />}>
+          <CategoryFilterBar category={category} />
+        </Suspense>
       </div>
 
       <WordsMarquee />

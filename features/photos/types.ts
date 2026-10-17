@@ -1,4 +1,5 @@
-export type CategoryId = "collines" | "cotes" | "couchers-de-soleil" | "ciels";
+/** Identifiant (adresse) d'une catégorie, ex. "couchers-de-soleil". Les catégories se gèrent depuis /admin/categories. */
+export type CategoryId = string;
 
 export interface Category {
   id: CategoryId;
@@ -11,6 +12,8 @@ export interface Photo {
   title: string;
   alt: string;
   category: CategoryId;
+  /** Nom de la catégorie, tel qu'il s'affiche. */
+  categoryLabel: string;
   /** Dimensions de la photo enregistrée : chaque carte garde le format réel de sa photo. */
   width: number;
   height: number;

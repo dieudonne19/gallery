@@ -4,12 +4,9 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { CATEGORIES } from "@/features/photos/data/categories"
 import type { Photo } from "@/features/photos/types"
 import { deletePhoto, movePhoto } from "../actions/photos"
-import { DeletePhotoButton } from "./DeletePhotoButton"
-
-const categoryLabel = (id: string) => CATEGORIES.find((c) => c.id === id)?.label ?? id
+import { ConfirmDeleteButton } from "./ConfirmDeleteButton"
 
 export function PhotoTable({ photos }: { photos: Photo[] }) {
   return (
@@ -33,7 +30,7 @@ export function PhotoTable({ photos }: { photos: Photo[] }) {
               </div>
             </TableCell>
             <TableCell className="font-medium">{photo.title}</TableCell>
-            <TableCell>{categoryLabel(photo.category)}</TableCell>
+            <TableCell>{photo.categoryLabel}</TableCell>
             <TableCell>{photo.year ?? "—"}</TableCell>
             <TableCell>
               <div className="flex">
@@ -73,7 +70,14 @@ export function PhotoTable({ photos }: { photos: Photo[] }) {
                 >
                   Modifier
                 </Button>
-                <DeletePhotoButton title={photo.title} action={deletePhoto.bind(null, photo.id)} />
+                <ConfirmDeleteButton
+                  ariaLabel={`Supprimer « ${photo.title} »`}
+                  title={`Supprimer « ${photo.title} » ?`}
+                  description="La photo disparaît du site et son fichier est effacé. Cette action est définitive."
+                  cancelLabel="Garder la photo"
+                  confirmLabel="Supprimer la photo"
+                  action={deletePhoto.bind(null, photo.id)}
+                />
               </div>
             </TableCell>
           </TableRow>

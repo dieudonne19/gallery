@@ -1,11 +1,10 @@
 import { HomePage } from "@/features/home";
-import { isCategoryId } from "@/features/photos/lib/queries";
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string }>;
+  searchParams: Promise<{ categorie?: string | string[] }>;
 }) {
   const { categorie } = await searchParams;
-  return <HomePage category={isCategoryId(categorie) ? categorie : undefined} />;
+  return <HomePage category={typeof categorie === "string" ? categorie : undefined} />;
 }

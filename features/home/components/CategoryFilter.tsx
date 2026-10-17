@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { CATEGORIES } from "@/features/photos/data/categories";
-import type { CategoryId } from "@/features/photos/types";
+import type { Category, CategoryId } from "@/features/photos/types";
 
 interface CategoryFilterProps {
+  categories: Category[];
   active?: CategoryId;
 }
 
-const chip =
-  "inline-flex min-h-11 shrink-0 items-center rounded-full border border-border px-[18px]";
+export const chip = "inline-flex min-h-11 shrink-0 items-center rounded-full border border-border px-[18px]";
 
-export function CategoryFilter({ active }: CategoryFilterProps) {
+export function CategoryFilter({ categories, active }: CategoryFilterProps) {
   return (
     <nav
       aria-label="Catégories"
@@ -24,7 +23,7 @@ export function CategoryFilter({ active }: CategoryFilterProps) {
       >
         Tout
       </Link>
-      {CATEGORIES.map((category) => (
+      {categories.map((category) => (
         <Link
           key={category.id}
           href={`/?categorie=${category.id}`}

@@ -1,10 +1,5 @@
 import { z } from "zod"
 
-import { CATEGORIES } from "@/features/photos/data/categories"
-import type { CategoryId } from "@/features/photos/types"
-
-const categoryIds = CATEGORIES.map((c) => c.id) as [CategoryId, ...CategoryId[]]
-
 const yearMessage = "Indiquez une année valide, par exemple 2024."
 
 export const photoSchema = z.object({
@@ -14,7 +9,7 @@ export const photoSchema = z.object({
     .trim()
     .min(1, "Décrivez la photo pour les personnes qui ne la voient pas.")
     .max(250, "La description dépasse 250 caractères."),
-  category: z.enum(categoryIds, "Choisissez une catégorie."),
+  category: z.string().trim().min(1, "Choisissez une catégorie.").max(40, "Choisissez une catégorie."),
   place: z
     .string()
     .trim()

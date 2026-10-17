@@ -2,7 +2,6 @@ import { cache } from "react";
 
 import { sql } from "@/lib/db";
 import { getPhotoUrl } from "@/lib/storage";
-import { CATEGORIES } from "../data/categories";
 import type { CategoryId, Photo } from "../types";
 
 interface PhotoRow {
@@ -11,6 +10,7 @@ interface PhotoRow {
   title: string;
   alt: string;
   category: CategoryId;
+  categoryLabel: string;
   place: string | null;
   year: number | null;
   width: number;
@@ -25,9 +25,10 @@ async function toPhoto(row: PhotoRow): Promise<Photo> {
 // cache() : une seule requête par rendu, même si plusieurs composants la demandent.
 const getAllPhotos = cache(async (): Promise<Photo[]> => {
   const rows = await sql`
-    select id, src, title, alt, category, place, year, width, height
-    from photos
-    order by position, created_at desc`;
+    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height
+    from photos p
+    join categories c on c.id = p.category
+    order by p.position, p.created_at desc`;
   return Promise.all((rows as PhotoRow[]).map(toPhoto));
 });
 
@@ -51,6 +52,3 @@ export async function getAdjacentPhotos(id: string): Promise<{ prev: Photo; next
   };
 }
 
-export function isCategoryId(value: string | undefined): value is CategoryId {
-  return CATEGORIES.some((c) => c.id === value);
-}

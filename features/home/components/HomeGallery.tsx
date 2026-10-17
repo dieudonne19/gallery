@@ -2,12 +2,15 @@ import { ArrowDownWideNarrow, Images } from "lucide-react";
 import Link from "next/link";
 
 import { Eyebrow } from "@/components/shared/Eyebrow";
+import { getCategories } from "@/features/categories/lib/queries";
 import { getPhotos } from "@/features/photos/lib/queries";
-import type { CategoryId } from "@/features/photos/types";
 import { PhotoGrid } from "./PhotoGrid";
 
 /** Galerie : la seule partie de l'accueil qui attend la base de données (voir le Suspense de HomePage). */
-export async function HomeGallery({ category }: { category?: CategoryId }) {
+export async function HomeGallery({ category: requested }: { category?: string }) {
+  // Une catégorie inconnue dans l'adresse est ignorée : on montre toutes les photos.
+  const categories = await getCategories();
+  const category = categories.some((c) => c.id === requested) ? requested : undefined;
   const photos = await getPhotos(category);
 
   return (

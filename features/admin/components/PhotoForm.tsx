@@ -9,17 +9,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { CATEGORIES } from "@/features/photos/data/categories"
-import type { Photo } from "@/features/photos/types"
+import type { Category, Photo } from "@/features/photos/types"
 import type { PhotoField, PhotoFormState } from "../schemas"
 
 interface PhotoFormProps {
   action: (state: PhotoFormState, formData: FormData) => Promise<PhotoFormState>
   /** Photo à modifier ; absente pour un ajout. */
   photo?: Photo
+  categories: Category[]
 }
-
-const categoryItems = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]))
 
 function Field({
   name,
@@ -52,7 +50,8 @@ function Field({
   )
 }
 
-export function PhotoForm({ action, photo }: PhotoFormProps) {
+export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
+  const categoryItems = Object.fromEntries(categories.map((c) => [c.id, c.label]))
   const [state, formAction, pending] = useActionState(action, {})
   const errors = state.errors ?? {}
   const initial: Record<string, string> = {
@@ -139,7 +138,7 @@ export function PhotoForm({ action, photo }: PhotoFormProps) {
             <SelectValue placeholder="Choisir une catégorie" />
           </SelectTrigger>
           <SelectContent>
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.label}
               </SelectItem>

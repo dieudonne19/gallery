@@ -23,6 +23,10 @@ async function readForm(formData: FormData, imageRequired: boolean) {
   const image = await readImage(formData.get("image"))
   if (image && "error" in image) errors.image = image.error
   else if (!image && imageRequired) errors.image = "Choisissez une photo."
+  if (data && !errors.category) {
+    const [found] = await sql`select 1 as ok from categories where id = ${data.category}`
+    if (!found) errors.category = "Cette catégorie n'existe plus. Choisissez-en une autre."
+  }
   return { data, values, errors, image: image && !("error" in image) ? image : null }
 }
 
