@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import type { Category, Photo } from "@/features/photos/types"
+import { resizeForUpload } from "../lib/resize-image"
 import type { PhotoField, PhotoFormState } from "../schemas"
 
 interface PhotoFormProps {
@@ -53,7 +54,25 @@ function Field({
 export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
   const categoryItems = Object.fromEntries(categories.map((c) => [c.id, c.label]))
   const [state, formAction, pending] = useActionState(action, {})
+  // Réduction de la photo dans le navigateur avant l'envoi (limite de 4,5 Mo de l'hébergeur).
+  const [imageStatus, setImageStatus] = useState<{ preparing: boolean; message?: string }>({ preparing: false })
   const errors = state.errors ?? {}
+
+  async function prepareImage(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget
+    const file = input.files?.[0]
+    if (!file) return setImageStatus({ preparing: false })
+
+    setImageStatus({ preparing: true, message: "Préparation de la photo…" })
+    const resized = await resizeForUpload(file)
+    if (resized !== file) {
+      const transfer = new DataTransfer()
+      transfer.items.add(resized)
+      input.files = transfer.files
+    }
+    const megabytes = (resized.size / 1048576).toFixed(1).replace(".", ",")
+    setImageStatus({ preparing: false, message: `Photo prête (${megabytes} Mo).` })
+  }
   const initial: Record<string, string> = {
     title: photo?.title ?? "",
     alt: photo?.alt ?? "",
@@ -76,7 +95,7 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
       <Field
         name="image"
         label={photo ? "Remplacer la photo" : "Photo"}
-        hint="JPEG, PNG ou WebP, 8 Mo maximum."
+        hint="JPEG, PNG ou WebP. La photo est réduite automatiquement avant l’envoi."
         error={errors.image}
       >
         {photo ? (
@@ -92,8 +111,12 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
           required={!photo}
           aria-invalid={errors.image ? true : undefined}
           aria-describedby={describe("image", true)}
+          onChange={prepareImage}
           className="h-11 py-2"
         />
+        <p role="status" className="text-sm text-muted-foreground">
+          {imageStatus.message}
+        </p>
       </Field>
 
       <Field name="title" label="Titre" error={errors.title}>
@@ -173,7 +196,7 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" disabled={pending} className="h-11 px-6 text-base">
+        <Button type="submit" disabled={pending || imageStatus.preparing} className="h-11 px-6 text-base">
           {pending ? "Envoi en cours…" : photo ? "Enregistrer les modifications" : "Ajouter la photo"}
         </Button>
         <Link href="/admin" className="flex min-h-11 items-center underline underline-offset-4">

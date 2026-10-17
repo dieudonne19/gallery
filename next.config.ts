@@ -26,9 +26,9 @@ const nextConfig: NextConfig = {
       : [],
   },
   experimental: {
-    // Photos jusqu'à 8 Mo (voir features/admin/lib/image.ts) + champs du formulaire.
-    // shortcut: si l'hébergeur plafonne le corps des requêtes (ex. 4,5 Mo), passer à un envoi direct par URL présignée.
-    serverActions: { bodySizeLimit: "9mb" },
+    // Vercel refuse les requêtes de plus de 4,5 Mo : le navigateur réduit donc la photo avant l'envoi
+    // (features/admin/lib/resize-image.ts) et le serveur la limite à 4 Mo (features/admin/lib/limits.ts).
+    serverActions: { bodySizeLimit: "4.5mb" },
   },
   async headers() {
     return [

@@ -1,8 +1,6 @@
 import sharp from "sharp"
 
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024
-/** Plus grand côté de la photo enregistrée. Assez pour un écran large, bien plus léger que l'original. */
-export const MAX_DIMENSION = 2000
+import { MAX_DIMENSION, MAX_IMAGE_BYTES } from "./limits"
 
 /** Toute photo est enregistrée en WebP : c'est ce qui part dans le bucket. */
 export interface ValidImage {
@@ -42,7 +40,7 @@ export async function optimizeImage(bytes: Uint8Array): Promise<{ bytes: Uint8Ar
 /** Retourne `null` si aucun fichier n'a été choisi, sinon l'image prête à enregistrer ou un message d'erreur. */
 export async function readImage(value: FormDataEntryValue | null): Promise<ValidImage | { error: string } | null> {
   if (!(value instanceof File) || value.size === 0) return null
-  if (value.size > MAX_IMAGE_BYTES) return { error: "La photo dépasse 8 Mo. Choisissez une version plus légère." }
+  if (value.size > MAX_IMAGE_BYTES) return { error: "La photo dépasse 4 Mo. Choisissez une version plus légère." }
   const bytes = new Uint8Array(await value.arrayBuffer())
   if (!isSupportedImage(bytes)) return { error: "Ce fichier n'est pas une photo JPEG, PNG ou WebP." }
   try {
