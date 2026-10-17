@@ -151,3 +151,44 @@
     border-radius: 3px;
   }
 }
+
+/* Cartes de la galerie : elles se posent en douceur en entrant dans l'écran. CSS seul, sans script. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
+@keyframes card-image-settle {
+  from {
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Repli (navigateurs sans animation liée au défilement) : entrée échelonnée des six premières cartes. */
+  .photo-card {
+    animation: card-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(min(var(--i, 0), 5) * 90ms);
+  }
+
+  /* Navigateurs qui le gèrent : l'animation suit la carte pendant qu'elle entre par le bas de l'écran.
+     Les cartes déjà visibles à l'ouverture sont d'emblée à leur place, sans clignotement. */
+  @supports (animation-timeline: view()) {
+    .photo-card {
+      /* La carte nomme sa propre chronologie : la photo, qui est dans un conteneur à overflow caché
+         (donc une zone de défilement), ne peut pas utiliser view() seule et s'y rattache. */
+      view-timeline: --photo-card;
+      animation: card-in linear both;
+      animation-timeline: --photo-card;
+      animation-range: entry 0% entry 60%;
+      animation-delay: 0s;
+    }
+    .photo-card-image {
+      animation: card-image-settle linear both;
+      animation-timeline: --photo-card;
+      animation-range: entry 0% cover 40%;
+    }
+  }
+}

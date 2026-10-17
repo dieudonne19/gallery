@@ -9,7 +9,13 @@ export function PhotoGrid({ photos }: { photos: Photo[] }) {
   return (
     <div className="columns-2 gap-3 md:gap-4 lg:columns-3">
       {photos.map((photo, index) => (
-        <PhotoThumb key={photo.id} photo={photo} priority={index < 3} className="mb-3 break-inside-avoid md:mb-4" />
+        <PhotoThumb
+          key={photo.id}
+          photo={photo}
+          index={index}
+          priority={index < 3}
+          className="mb-3 break-inside-avoid md:mb-4"
+        />
       ))}
     </div>
   );
