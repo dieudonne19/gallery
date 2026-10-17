@@ -1,0 +1,62 @@
+name: Auto PR dev → main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # l'historique complet sert à comparer dev et main
+
+      - name: Create PR if none is open
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          AUTHOR: ${{ github.actor }}
+        run: |
+          if ! git ls-remote --exit-code --heads origin main > /dev/null; then
+            echo "::warning::La branche main n'existe pas encore, aucune PR créée."
+            exit 0
+          fi
+
+          EXISTING_PR=$(gh pr list --base main --head dev --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists, nothing to do."
+            exit 0
+          fi
+
+          # Sans commit d'écart entre dev et main, GitHub refuse de créer la PR.
+          if [ "$(git rev-list --count origin/main..origin/dev)" = "0" ]; then
+            echo "dev et main sont identiques, nothing to do."
+            exit 0
+          fi
+
+          cat > pr-body.md <<EOF
+          ## Mise en production automatique
+
+          Cette PR a été créée automatiquement suite à un push sur \`dev\`.
+
+          **Commit :** $COMMIT_SHA
+          **Auteur :** $AUTHOR
+
+          ---
+          ⚠️ Vérifier les changements avant de merger.
+          EOF
+
+          gh pr create \
+            --base main \
+            --head dev \
+            --title "🚀 Release dev → main" \
+            --body-file pr-body.md
+
+          echo "PR created."
