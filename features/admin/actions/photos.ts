@@ -18,6 +18,10 @@ const newKey = (extension: string) => `${KEY_PREFIX}/photos/${randomBytes(8).toS
 
 const refreshPages = () => revalidatePath("/", "layout")
 
+// Un fichier qui reste dans le bucket ne bloque rien, mais on garde une trace pour pouvoir le retrouver.
+const deleteQuietly = (key: string) =>
+  deletePhotoFile(key).catch((error) => console.error("deletePhotoFile failed", key, error))
+
 /** Validation commune à l'ajout et à la modification. */
 async function readForm(formData: FormData, imageRequired: boolean) {
   const { data, values, errors } = parsePhotoForm(formData)
@@ -46,7 +50,7 @@ export async function createPhoto(_: PhotoFormState, formData: FormData): Promis
               (select coalesce(min(position), 0) - 1 from photos), ${image.width}, ${image.height})`
   } catch (error) {
     console.error("createPhoto failed", error)
-    await deletePhotoFile(key).catch(() => {})
+    await deleteQuietly(key)
     return { message: "La photo n'a pas pu être enregistrée. Réessayez dans un instant.", values }
   }
 
@@ -74,11 +78,11 @@ export async function updatePhoto(id: string, _: PhotoFormState, formData: FormD
       where id = ${id}`
   } catch (error) {
     console.error("updatePhoto failed", error)
-    if (image) await deletePhotoFile(newSrc).catch(() => {})
+    if (image) await deleteQuietly(newSrc)
     return { message: "Les modifications n'ont pas pu être enregistrées. Réessayez dans un instant.", values }
   }
 
-  if (image) await deletePhotoFile(oldSrc).catch(() => {})
+  if (image) await deleteQuietly(oldSrc)
   refreshPages()
   redirect("/admin")
 }
@@ -86,7 +90,7 @@ export async function updatePhoto(id: string, _: PhotoFormState, formData: FormD
 export async function deletePhoto(id: string) {
   await requireAdmin()
   const [row] = await sql`delete from photos where id = ${id} returning src`
-  if (row) await deletePhotoFile(row.src as string).catch(() => {})
+  if (row) await deleteQuietly(row.src as string)
   refreshPages()
 }
 

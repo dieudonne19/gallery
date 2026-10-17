@@ -28,7 +28,9 @@ export async function resizeForUpload(file: File): Promise<File> {
     const canvas = document.createElement("canvas")
     canvas.width = Math.round(bitmap.width * scale)
     canvas.height = Math.round(bitmap.height * scale)
-    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    const context = canvas.getContext("2d")
+    if (!context) return file // sans contexte, le canvas serait vide : le serveur traitera l'original
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
     bitmap.close()
 
     let blob = await encode(canvas, "image/webp", 0.9)

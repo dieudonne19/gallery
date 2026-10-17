@@ -32,6 +32,18 @@ const getAllPhotos = cache(async (): Promise<Photo[]> => {
   return Promise.all((rows as PhotoRow[]).map(toPhoto));
 });
 
+/** Clé du fichier dans le bucket (sans URL signée) : pour les routes qui lisent la photo elles-mêmes. */
+export async function getPhotoKey(id: string): Promise<string | undefined> {
+  const [row] = await sql`select src from photos where id = ${id}`;
+  return row?.src as string | undefined;
+}
+
+/** Identifiant et date d'ajout de chaque photo, sans signer les URLs : pour le plan du site. */
+export async function getPhotoDates(): Promise<{ id: string; createdAt: Date }[]> {
+  const rows = await sql`select id, created_at from photos order by position, created_at desc`;
+  return rows.map((r) => ({ id: r.id as string, createdAt: new Date(r.created_at as string) }));
+}
+
 export async function getPhotos(category?: CategoryId): Promise<Photo[]> {
   const photos = await getAllPhotos();
   return category ? photos.filter((p) => p.category === category) : photos;

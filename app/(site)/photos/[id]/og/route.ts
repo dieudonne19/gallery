@@ -1,6 +1,6 @@
 import sharp from "sharp"
 
-import { sql } from "@/lib/db"
+import { getPhotoKey } from "@/features/photos/lib/queries"
 import { getPhotoUrl } from "@/lib/storage"
 
 /**
@@ -8,12 +8,20 @@ import { getPhotoUrl } from "@/lib/storage"
  * Les photos sont dans un bucket privé, dont les adresses signées expirent : les réseaux sociaux ont besoin
  * d'une adresse stable, qui est celle-ci. Le CDN la garde en cache, donc le bucket n'est lu qu'une fois par jour.
  */
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const [photo] = await sql`select src from photos where id = ${id}`
-  if (!photo) return new Response("Photo introuvable", { status: 404 })
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  // Le cache du CDN est indexé sur l'adresse complète : "?1", "?2"… le contourneraient et referaient tout le travail.
+  if (new URL(request.url).search) return new Response("Introuvable", { status: 404 })
 
-  const source = await fetch(await getPhotoUrl(photo.src as string))
+  const { id } = await params
+  const key = await getPhotoKey(id)
+  if (!key) return new Response("Photo introuvable", { status: 404 })
+
+  let source: Response
+  try {
+    source = await fetch(await getPhotoUrl(key), { signal: AbortSignal.timeout(8000) })
+  } catch {
+    return new Response("Image trop lente à charger", { status: 504 })
+  }
   if (!source.ok) return new Response("Image indisponible", { status: 502 })
 
   const image = await sharp(Buffer.from(await source.arrayBuffer()))

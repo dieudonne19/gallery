@@ -10,6 +10,7 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
+    "test": "node --test \"lib/**/*.test.ts\" \"features/**/*.test.ts\"",
     "db:init": "node --env-file=.env.development.local scripts/db-init.mjs",
     "db:init:prod": "node --env-file=.env.production.local scripts/db-init.mjs"
   },
