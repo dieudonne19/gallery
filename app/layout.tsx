@@ -1,9 +1,11 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { DM_Mono, DM_Sans, Fraunces } from "next/font/google"
 
 import "./globals.css"
 import { SkipLink } from "@/components/shared/SkipLink"
 import { Toaster } from "@/components/ui/sonner"
+import { baseOpenGraph } from "@/lib/metadata"
+import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site"
 
 const fontSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
 const fontSerif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" })
@@ -14,11 +16,23 @@ const fontMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "dieudonne.andrianjato — Photographie de paysages",
-    template: "%s · dieudonne.andrianjato",
+    default: SITE_TITLE,
+    template: `%s · ${SITE_NAME}`,
   },
-  description: "Photographies de paysages : collines, côtes, couchers de soleil et ciels.",
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: AUTHOR_NAME }],
+  creator: AUTHOR_NAME,
+  // Chaque page est sa propre référence : /?categorie=cotes pointe vers /, pas de contenu en double.
+  alternates: { canonical: "./" },
+  openGraph: { ...baseOpenGraph, title: SITE_TITLE, description: SITE_DESCRIPTION },
+  twitter: { card: "summary", title: SITE_TITLE, description: SITE_DESCRIPTION },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#f6f3ec",
 }
 
 export default function RootLayout({

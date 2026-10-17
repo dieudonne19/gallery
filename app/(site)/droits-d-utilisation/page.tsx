@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LEGAL } from "@/features/legal/config";
+import { pageMetadata } from "@/lib/metadata";
 import { LegalPage, LegalSection, legalLink } from "@/features/legal/components/LegalPage";
 
-export const metadata: Metadata = { title: "Droits d’utilisation" };
+export const metadata: Metadata = pageMetadata(
+  "Droits d’utilisation",
+  "Ce que vous pouvez faire librement des photographies de ce site, et comment demander une autorisation.",
+);
 
 export default function Page() {
   const { editor, updatedAt } = LEGAL;

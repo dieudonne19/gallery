@@ -32,7 +32,7 @@ export function PhotoThumb({ photo, index = 0, priority = false, className }: Ph
             alt={photo.alt}
             fill
             priority={priority}
-            sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 50vw"
+            sizes="(min-width: 1024px) 384px, 50vw"
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
           />
         </span>

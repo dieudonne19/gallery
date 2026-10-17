@@ -29,7 +29,8 @@ function isSupportedImage(bytes: Uint8Array) {
  * dont la position GPS : rien de ce qui est enregistré ne révèle où la photo a été prise.
  */
 export async function optimizeImage(bytes: Uint8Array): Promise<{ bytes: Uint8Array; width: number; height: number }> {
-  const { data, info } = await sharp(bytes)
+  // Plafond de pixels : un fichier léger peut s'ouvrir en plusieurs Go de mémoire (50 Mpx = un très gros capteur).
+  const { data, info } = await sharp(bytes, { limitInputPixels: 100_000_000 })
     .rotate()
     .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
     .webp({ quality: 82 })
