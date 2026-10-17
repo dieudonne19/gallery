@@ -9,8 +9,8 @@ interface HomePageProps {
   category?: CategoryId;
 }
 
-export function HomePage({ category }: HomePageProps) {
-  const photos = getPhotos(category);
+export async function HomePage({ category }: HomePageProps) {
+  const photos = await getPhotos(category);
 
   return (
     <>

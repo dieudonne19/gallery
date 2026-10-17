@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { CATEGORIES } from "@/features/photos/data/photos";
+import { CATEGORIES } from "@/features/photos/data/categories";
 import type { CategoryId } from "@/features/photos/types";
 
 interface CategoryFilterProps {

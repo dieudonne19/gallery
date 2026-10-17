@@ -7,8 +7,8 @@ interface ContactPageProps {
   photoId?: string;
 }
 
-export function ContactPage({ photoId }: ContactPageProps) {
-  const photo = photoId ? getPhotoById(photoId) : undefined;
+export async function ContactPage({ photoId }: ContactPageProps) {
+  const photo = photoId ? await getPhotoById(photoId) : undefined;
 
   return (
     <>

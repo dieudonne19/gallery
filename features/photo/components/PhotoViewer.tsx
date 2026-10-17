@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CATEGORIES } from "@/features/photos/data/photos";
+import { CATEGORIES } from "@/features/photos/data/categories";
 import type { Photo } from "@/features/photos/types";
 
 export function PhotoViewer({ photo }: { photo: Photo }) {
