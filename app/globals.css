@@ -125,3 +125,29 @@
     display: none;
   }
 }
+
+/* Barre de défilement : fine, noire, sans fond (la piste reprend la couleur de la page). */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--foreground) transparent;
+}
+
+/* Chrome, Edge, Safari : `thin` reste épais (~12 px) ; on passe à 6 px avec les pseudo-éléments WebKit,
+   qui sont ignorés dès que scrollbar-width / scrollbar-color sont définis, d'où la remise à auto. Firefox garde `thin`. */
+@supports selector(::-webkit-scrollbar) {
+  :root {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--foreground);
+    border-radius: 3px;
+  }
+}

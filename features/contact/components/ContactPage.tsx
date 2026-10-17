@@ -22,11 +22,7 @@ export async function ContactPage({ photoId }: ContactPageProps) {
         </p>
       </section>
 
-      <PostcardForm
-        backdropSrc="/photos/p09.jpg"
-        stampSrc="/photos/p08.jpg"
-        initialPhoto={photo?.title}
-      />
+      <PostcardForm initialPhoto={photo?.title} />
     </>
   );
 }

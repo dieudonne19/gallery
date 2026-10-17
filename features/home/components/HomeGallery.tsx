@@ -1,3 +1,4 @@
+import { ArrowDownWideNarrow, Images } from "lucide-react";
 import Link from "next/link";
 
 import { Eyebrow } from "@/components/shared/Eyebrow";
@@ -14,19 +15,27 @@ export async function HomeGallery({ category }: { category?: CategoryId }) {
       {/* Largeur limitée : sur grand écran la galerie reste lisible d'un coup d'œil. */}
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-4 flex justify-between">
-          <Eyebrow>
+          <Eyebrow className="flex items-center gap-2 normal-case">
+            <Images aria-hidden="true" className="size-4" />
             {photos.length} {photos.length > 1 ? "photos" : "photo"}
           </Eyebrow>
-          <Eyebrow>Plus récentes d’abord</Eyebrow>
+          <Eyebrow className="flex items-center gap-2 normal-case">
+            <ArrowDownWideNarrow aria-hidden="true" className="size-4" />
+            plus récentes d’abord
+          </Eyebrow>
         </div>
         {photos.length > 0 ? (
           <PhotoMosaic photos={photos} />
         ) : (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
-            <p className="text-xl text-muted-foreground">Aucune photo dans cette catégorie pour l’instant.</p>
-            <Link href="/" className="flex min-h-11 items-center underline underline-offset-4">
-              Voir toutes les photos
-            </Link>
+            <p className="text-xl text-muted-foreground">
+              {category ? "Aucune photo dans cette catégorie pour l’instant." : "Les premières photos arrivent bientôt."}
+            </p>
+            {category ? (
+              <Link href="/" className="flex min-h-11 items-center underline underline-offset-4">
+                Voir toutes les photos
+              </Link>
+            ) : null}
           </div>
         )}
       </div>

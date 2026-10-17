@@ -21,7 +21,7 @@ export function HomeHero() {
           Les paysages qui m’ont arrêté en chemin, classés par catégorie.
         </p>
         <Link href="/contact" className="flex min-h-11 items-center underline underline-offset-4">
-          Une photo vous parle ? Écrivez-moi
+          Une photo vous parle ? Écrivez-moi
         </Link>
       </div>
     </section>

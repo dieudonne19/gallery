@@ -7,7 +7,7 @@ import { redirect } from "next/navigation"
 
 import { requireAdmin } from "@/lib/auth"
 import { sql } from "@/lib/db"
-import { deletePhotoFile, isBucketKey, uploadPhoto } from "@/lib/storage"
+import { deletePhotoFile, uploadPhoto } from "@/lib/storage"
 import { readImage } from "../lib/image"
 import { parsePhotoForm, type PhotoFormState } from "../schemas"
 
@@ -72,7 +72,7 @@ export async function updatePhoto(id: string, _: PhotoFormState, formData: FormD
     return { message: "Les modifications n'ont pas pu être enregistrées. Réessayez dans un instant.", values }
   }
 
-  if (image && isBucketKey(oldSrc)) await deletePhotoFile(oldSrc).catch(() => {})
+  if (image) await deletePhotoFile(oldSrc).catch(() => {})
   refreshPages()
   redirect("/admin")
 }
@@ -80,7 +80,7 @@ export async function updatePhoto(id: string, _: PhotoFormState, formData: FormD
 export async function deletePhoto(id: string) {
   await requireAdmin()
   const [row] = await sql`delete from photos where id = ${id} returning src`
-  if (row && isBucketKey(row.src as string)) await deletePhotoFile(row.src as string).catch(() => {})
+  if (row) await deletePhotoFile(row.src as string).catch(() => {})
   refreshPages()
 }
 

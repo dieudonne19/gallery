@@ -9,13 +9,12 @@ import { PostcardStamp } from "./PostcardStamp";
 interface PostcardProps {
   value: ContactDraft;
   onChange: (next: ContactDraft) => void;
-  stampSrc: string;
 }
 
 const lined =
   "rounded-none border-0 border-b border-muted-foreground bg-transparent px-0 font-serif text-xl font-light italic shadow-none focus-visible:ring-0 placeholder:text-muted-foreground";
 
-export function Postcard({ value, onChange, stampSrc }: PostcardProps) {
+export function Postcard({ value, onChange }: PostcardProps) {
   const set = (patch: Partial<ContactDraft>) => onChange({ ...value, ...patch });
 
   const message = (
@@ -60,7 +59,7 @@ export function Postcard({ value, onChange, stampSrc }: PostcardProps) {
           id="postcard-photo"
           value={value.photo}
           onChange={(e) => set({ photo: e.target.value })}
-          placeholder="[Titre de la photo]"
+          placeholder="Titre de la photo"
           className={lined}
         />
       </div>
@@ -72,7 +71,7 @@ export function Postcard({ value, onChange, stampSrc }: PostcardProps) {
       <div className="order-2 md:order-none">{message}</div>
       <div className="hidden bg-border md:block" aria-hidden />
       <div className="order-1 flex flex-col gap-7 md:order-none md:gap-10">
-        <PostcardStamp src={stampSrc} />
+        <PostcardStamp />
         {address}
       </div>
     </div>

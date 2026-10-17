@@ -21,9 +21,6 @@ export async function deletePhotoFile(key: string) {
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }))
 }
 
-/** Clé du bucket (ajout du back-office) ou chemin public d'une photo d'origine (/photos/…). */
-export const isBucketKey = (src: string) => !src.startsWith("/")
-
 /**
  * URL affichable d'une photo. Bucket privé : URL signée valable 24 h.
  * La signature est arrondie à l'heure, donc l'URL reste identique pendant une heure
@@ -31,7 +28,6 @@ export const isBucketKey = (src: string) => !src.startsWith("/")
  * plus de 23 h.
  */
 export async function getPhotoUrl(src: string): Promise<string> {
-  if (!isBucketKey(src)) return src
   const signingDate = new Date(Math.floor(Date.now() / HOUR_MS) * HOUR_MS)
   return getSignedUrl(s3, new GetObjectCommand({ Bucket: bucket, Key: src }), {
     expiresIn: URL_LIFETIME_S,
