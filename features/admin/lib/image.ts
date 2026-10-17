@@ -7,6 +7,9 @@ export const MAX_DIMENSION = 2000
 /** Toute photo est enregistrée en WebP : c'est ce qui part dans le bucket. */
 export interface ValidImage {
   bytes: Uint8Array
+  /** Dimensions après redressement et redimensionnement. */
+  width: number
+  height: number
   extension: "webp"
   contentType: "image/webp"
 }
@@ -27,13 +30,13 @@ function isSupportedImage(bytes: Uint8Array) {
  * Redimensionne et convertit en WebP. Remet la photo à l'endroit (EXIF) puis efface les métadonnées,
  * dont la position GPS : rien de ce qui est enregistré ne révèle où la photo a été prise.
  */
-export async function optimizeImage(bytes: Uint8Array): Promise<Uint8Array> {
-  const output = await sharp(bytes)
+export async function optimizeImage(bytes: Uint8Array): Promise<{ bytes: Uint8Array; width: number; height: number }> {
+  const { data, info } = await sharp(bytes)
     .rotate()
     .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
     .webp({ quality: 82 })
-    .toBuffer()
-  return new Uint8Array(output)
+    .toBuffer({ resolveWithObject: true })
+  return { bytes: new Uint8Array(data), width: info.width, height: info.height }
 }
 
 /** Retourne `null` si aucun fichier n'a été choisi, sinon l'image prête à enregistrer ou un message d'erreur. */
@@ -43,7 +46,7 @@ export async function readImage(value: FormDataEntryValue | null): Promise<Valid
   const bytes = new Uint8Array(await value.arrayBuffer())
   if (!isSupportedImage(bytes)) return { error: "Ce fichier n'est pas une photo JPEG, PNG ou WebP." }
   try {
-    return { bytes: await optimizeImage(bytes), extension: "webp", contentType: "image/webp" }
+    return { ...(await optimizeImage(bytes)), extension: "webp", contentType: "image/webp" }
   } catch {
     return { error: "Cette photo n'a pas pu être lue. Essayez un autre fichier." }
   }

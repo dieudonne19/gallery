@@ -6,29 +6,29 @@ import type { Photo } from "../types";
 
 interface PhotoThumbProps {
   photo: Photo;
-  /** Grande vignette : remplit la hauteur de sa zone sur desktop. */
-  fill?: boolean;
-  /** Première photo visible : chargée en priorité. */
+  /** Photos visibles dès l'ouverture : chargées en priorité. */
   priority?: boolean;
   className?: string;
 }
 
-export function PhotoThumb({ photo, fill = false, priority = false, className }: PhotoThumbProps) {
+// La carte garde le format réel de la photo (verticale, horizontale, carrée).
+// Seuls les formats extrêmes sont légèrement recadrés, pour éviter une carte démesurée.
+const cardRatio = ({ width, height }: Photo) => Math.min(Math.max(width / height, 0.66), 2);
+
+export function PhotoThumb({ photo, priority = false, className }: PhotoThumbProps) {
   return (
     <figure className={cn("flex flex-col", className)}>
       <Link
         href={`/photos/${photo.id}`}
-        className={cn(
-          "group relative isolate block aspect-[3/2] overflow-hidden rounded-xl bg-muted",
-          fill && "md:aspect-auto md:min-h-96 md:flex-1",
-        )}
+        style={{ aspectRatio: cardRatio(photo) }}
+        className="group relative isolate block overflow-hidden rounded-xl bg-muted"
       >
         <Image
           src={photo.src}
           alt={photo.alt}
           fill
           priority={priority}
-          sizes="(min-width: 1280px) 768px, (min-width: 768px) 60vw, 100vw"
+          sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
         />
         <span className="absolute inset-x-0 bottom-0 hidden items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition-opacity group-hover:opacity-100 md:flex">

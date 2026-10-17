@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/shared/Eyebrow";
 import { getPhotos } from "@/features/photos/lib/queries";
 import type { CategoryId } from "@/features/photos/types";
-import { PhotoMosaic } from "./PhotoMosaic";
+import { PhotoGrid } from "./PhotoGrid";
 
 /** Galerie : la seule partie de l'accueil qui attend la base de données (voir le Suspense de HomePage). */
 export async function HomeGallery({ category }: { category?: CategoryId }) {
@@ -25,7 +25,7 @@ export async function HomeGallery({ category }: { category?: CategoryId }) {
           </Eyebrow>
         </div>
         {photos.length > 0 ? (
-          <PhotoMosaic photos={photos} />
+          <PhotoGrid photos={photos} />
         ) : (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
             <p className="text-xl text-muted-foreground">

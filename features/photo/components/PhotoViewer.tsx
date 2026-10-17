@@ -18,17 +18,17 @@ export function PhotoViewer({ photo }: { photo: Photo }) {
         </a>
       </div>
 
-      <div className="md:px-16">
-        <div className="relative aspect-[4/3] w-full bg-muted md:aspect-[3/2]">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            fill
-            priority
-            sizes="(min-width: 768px) calc(100vw - 8rem), 100vw"
-            className="object-cover"
-          />
-        </div>
+      {/* La photo entière, à son format : centrée, jamais plus haute que 80 % de l'écran. */}
+      <div className="flex justify-center px-4 md:px-16">
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          width={photo.width}
+          height={photo.height}
+          priority
+          sizes="(min-width: 768px) calc(100vw - 8rem), 100vw"
+          className="h-auto max-h-[80svh] w-auto max-w-full rounded-xl bg-muted object-contain"
+        />
       </div>
     </>
   );

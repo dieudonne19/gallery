@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { SmoothScroll } from "@/components/shared/SmoothScroll";
 import type { CategoryId } from "@/features/photos/types";
 import { CategoryFilter } from "./CategoryFilter";
 import { GallerySkeleton } from "./GallerySkeleton";
@@ -15,6 +16,8 @@ interface HomePageProps {
 export function HomePage({ category }: HomePageProps) {
   return (
     <>
+      <SmoothScroll />
+
       {/* La hero, le filtre et le bandeau ne dépendent pas de la base : ils s'affichent tout de suite. */}
       <HomeHero />
 
