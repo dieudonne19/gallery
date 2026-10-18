@@ -18,8 +18,8 @@ function siteUrl() {
  */
 export const SITE_URL = siteUrl()
 
-export const SITE_NAME = "dieudonne.andrianjato"
-export const SITE_TITLE = `${SITE_NAME} — Photographie de paysages`
+export const SITE_NAME = "Hitako"
+export const SITE_TITLE = `${SITE_NAME} — photographie de paysages`
 export const SITE_DESCRIPTION =
-  "Mes photographies de paysages, prises par passion. Par Dieudonné Andrianjato, développeur web et designer."
+  "Les paysages qui m’ont arrêté en chemin, classés par catégorie. Photographies de Dieudonné Andrianjato."
 export const AUTHOR_NAME = "Dieudonné Andrianjato"

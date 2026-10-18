@@ -9,8 +9,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Logo } from "./Logo";
 import { PortfolioLink } from "./PortfolioLink";
-import { NAV_LINKS, SITE_NAME } from "./nav";
+import { NAV_LINKS } from "./nav";
 
 export function MobileMenu() {
   return (
@@ -26,8 +27,8 @@ export function MobileMenu() {
         Menu
       </SheetTrigger>
       <SheetContent side="right" className="bg-background">
-        <SheetTitle className="px-6 pt-6 font-serif text-xl font-normal">
-          {SITE_NAME}
+        <SheetTitle className="px-6 pt-6">
+          <Logo />
         </SheetTitle>
         <nav className="flex flex-col px-6 pt-4">
           {NAV_LINKS.map((link) => (

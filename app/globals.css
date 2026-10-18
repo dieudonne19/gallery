@@ -39,7 +39,7 @@
 
 
 @theme inline {
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-inter);
   --font-serif: var(--font-fraunces);
   --font-mono: var(--font-dm-mono);
 

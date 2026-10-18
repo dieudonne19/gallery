@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/features/admin/actions/auth"
 import { isAdmin } from "@/lib/auth"
-import { SITE_NAME } from "./nav"
+import { Logo } from "./Logo"
 
 // Header fixe, comme celui du site.
 export async function AdminHeader() {
@@ -11,8 +11,8 @@ export async function AdminHeader() {
 
   return (
     <header className="sticky top-0 z-40 flex h-(--header-h) items-center justify-between border-b border-border bg-background px-4 md:px-16">
-      <Link href={loggedIn ? "/admin" : "/"} className="flex min-h-11 items-center gap-3 font-serif text-xl">
-        {SITE_NAME}
+      <Link href={loggedIn ? "/admin" : "/"} className="flex min-h-11 items-center gap-3">
+        <Logo />
         <span className="hidden font-mono text-xs uppercase tracking-wider text-muted-foreground sm:inline">
           Administration
         </span>

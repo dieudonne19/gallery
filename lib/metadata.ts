@@ -2,8 +2,13 @@ import type { Metadata } from "next"
 
 import { SITE_NAME } from "./site"
 
-/** Image d'aperçu par défaut (app/opengraph-image.tsx). Les pages photo posent la leur. */
-export const defaultShareImage = { url: "/opengraph-image", width: 1200, height: 630, alt: SITE_NAME }
+/** Image d'aperçu par défaut (app/opengraph-image.png). Les pages photo posent la leur. */
+export const defaultShareImage = {
+  url: "/opengraph-image.png",
+  width: 1200,
+  height: 630,
+  alt: `${SITE_NAME} — photographie de paysages`,
+}
 
 /**
  * Valeurs de partage communes (WhatsApp, LinkedIn, Facebook, X…). Une page qui définit son propre `openGraph` ou
