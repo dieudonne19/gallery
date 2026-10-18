@@ -4,7 +4,7 @@ import { DM_Mono, DM_Sans, Fraunces } from "next/font/google"
 import "./globals.css"
 import { SkipLink } from "@/components/shared/SkipLink"
 import { Toaster } from "@/components/ui/sonner"
-import { baseOpenGraph } from "@/lib/metadata"
+import { baseOpenGraph, defaultShareImage } from "@/lib/metadata"
 import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site"
 
 const fontSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   // Chaque page est sa propre référence : /?categorie=cotes pointe vers /, pas de contenu en double.
   alternates: { canonical: "./" },
   openGraph: { ...baseOpenGraph, title: SITE_TITLE, description: SITE_DESCRIPTION },
-  twitter: { card: "summary", title: SITE_TITLE, description: SITE_DESCRIPTION },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION, images: [defaultShareImage.url] },
 }
 
 export const viewport: Viewport = {

@@ -18,7 +18,7 @@ export function HomeHero() {
       </h1>
       <div className="hero-reveal mt-5 flex flex-col items-center gap-1 md:mt-6" style={reveal(1)}>
         <p className="max-w-xl text-balance text-lg text-muted-foreground">
-          Les paysages qui m’ont arrêté en chemin, classés par catégorie.
+          Ce monde qui nous entoure est plein de surprises. On le découvre ensemble.
         </p>
         <Link href="/contact" className="flex min-h-11 items-center underline underline-offset-4">
           Une photo vous parle ? Écrivez-moi
