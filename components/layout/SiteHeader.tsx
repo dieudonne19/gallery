@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileMenu } from "./MobileMenu";
+import { PortfolioLink } from "./PortfolioLink";
 import { NAV_LINKS, SITE_NAME } from "./nav";
 
 export function SiteHeader() {
@@ -20,6 +21,7 @@ export function SiteHeader() {
             {link.label}
           </Link>
         ))}
+        <PortfolioLink className="flex min-h-11 items-center underline-offset-4 hover:underline" />
       </nav>
 
       <MobileMenu />

@@ -4,3 +4,5 @@ export const NAV_LINKS = [
 ] as const;
 
 export const SITE_NAME = "dieudonne.andrianjato";
+
+export const PORTFOLIO_URL = "https://dieudonneandrianjato.vercel.app";

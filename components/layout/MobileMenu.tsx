@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { PortfolioLink } from "./PortfolioLink";
 import { NAV_LINKS, SITE_NAME } from "./nav";
 
 export function MobileMenu() {
@@ -39,6 +40,7 @@ export function MobileMenu() {
               {link.label}
             </SheetClose>
           ))}
+          <PortfolioLink className="flex min-h-12 items-center text-xl" />
         </nav>
       </SheetContent>
     </Sheet>
