@@ -47,3 +47,11 @@ alter table photos drop constraint if exists photos_category_fk;
 alter table photos add constraint photos_category_fk foreign key (category) references categories (id) on update cascade on delete restrict;
 
 create index if not exists photos_position_idx on photos (position);
+
+-- Tentatives de connexion à /admin, par adresse : limite les essais répétés (voir features/admin/lib/login-limit.ts).
+create table if not exists login_attempts (
+  ip text not null,
+  attempted_at timestamptz not null default now()
+);
+
+create index if not exists login_attempts_ip_idx on login_attempts (ip, attempted_at);

@@ -3,7 +3,28 @@ import type { NextConfig } from "next"
 // Les photos du bucket (privé) sont servies par URL signée : next/image doit connaître son hôte.
 const storage = process.env.AWS_ENDPOINT_URL_S3 ? new URL(process.env.AWS_ENDPOINT_URL_S3) : null
 
+const isDev = process.env.NODE_ENV !== "production"
+
+// Tout vient du site lui-même : les photos passent par /_next/image, les polices sont hébergées avec le site.
+// shortcut: 'unsafe-inline' pour les scripts (Next.js en injecte pour s'hydrater) : la CSP bloque tout chargement ou envoi
+// vers un autre site, mais pas un script injecté dans la page. Un nonce par requête fermerait ce trou (proxy.ts) ; à faire si le site accepte un jour du contenu de visiteurs.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  "manifest-src 'self'",
+  "media-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join("; ")
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -32,7 +53,6 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      // shortcut: pas de Content-Security-Policy, elle demande un nonce par requête ; à ajouter avant la mise en ligne.
       { source: "/:path*", headers: securityHeaders },
       { source: "/admin/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
     ]
