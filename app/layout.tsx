@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { DM_Mono, DM_Sans, Fraunces } from "next/font/google"
+import { DM_Mono, Fraunces, Inter } from "next/font/google"
 
 import "./globals.css"
 import { SkipLink } from "@/components/shared/SkipLink"
@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { baseOpenGraph, defaultShareImage } from "@/lib/metadata"
 import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site"
 
-const fontSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const fontSerif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" })
 const fontMono = DM_Mono({
   subsets: ["latin"],
@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  manifest: "/manifest.webmanifest",
   authors: [{ name: AUTHOR_NAME }],
   creator: AUTHOR_NAME,
   // Chaque page est sa propre référence : /?categorie=cotes pointe vers /, pas de contenu en double.

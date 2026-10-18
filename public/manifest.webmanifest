@@ -1,0 +1,13 @@
+{
+  "name": "Hitako",
+  "short_name": "Hitako",
+  "description": "Photographie de paysages par Dieudonné Andrianjato",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#F6F3EC",
+  "theme_color": "#F6F3EC",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
