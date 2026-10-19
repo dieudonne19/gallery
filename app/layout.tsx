@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { DM_Mono, Fraunces, Inter } from "next/font/google"
+import { Fraunces, Inter } from "next/font/google"
 
 import "./globals.css"
 import { RegisterServiceWorker } from "@/components/shared/RegisterServiceWorker"
@@ -10,11 +10,6 @@ import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "
 
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const fontSerif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" })
-const fontMono = DM_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-dm-mono",
-})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -47,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} font-sans antialiased`}
+      className={`${fontSans.variable} ${fontSerif.variable} font-sans antialiased`}
     >
       <body>
         <SkipLink />
