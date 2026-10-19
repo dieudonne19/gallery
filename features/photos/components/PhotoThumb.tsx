@@ -38,7 +38,7 @@ export function PhotoThumb({ photo, index = 0, priority = false, className }: Ph
         </span>
         <span className="absolute inset-x-0 bottom-0 hidden translate-y-2 items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none md:flex">
           <span>{photo.title}</span>
-          <span className="font-mono text-xs uppercase tracking-wider">Voir</span>
+          <span className="text-xs font-medium uppercase tracking-[0.12em]">Voir</span>
         </span>
       </Link>
       {/* Pas de survol sur mobile : la légende reste visible. */}

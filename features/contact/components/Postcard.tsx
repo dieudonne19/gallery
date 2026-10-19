@@ -19,7 +19,7 @@ export function Postcard({ value, onChange }: PostcardProps) {
 
   const message = (
     <div className="flex flex-col gap-3">
-      <Label htmlFor="postcard-message" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+      <Label htmlFor="postcard-message" className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
         Votre message
       </Label>
       <Textarea
@@ -40,7 +40,7 @@ export function Postcard({ value, onChange }: PostcardProps) {
         <p className="mt-1 font-serif text-xl font-light">{SITE_NAME}</p>
       </div>
       <div>
-        <Label htmlFor="postcard-name" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+        <Label htmlFor="postcard-name" className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           De la part de
         </Label>
         <Input
@@ -52,7 +52,7 @@ export function Postcard({ value, onChange }: PostcardProps) {
         />
       </div>
       <div>
-        <Label htmlFor="postcard-photo" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+        <Label htmlFor="postcard-photo" className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
           À propos de la photo (facultatif)
         </Label>
         <Input
