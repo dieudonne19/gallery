@@ -1,22 +1,23 @@
-"use client";
+"use client"
 
-import { toast } from "sonner";
+import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
+import { ShareIcon } from "lucide-react"
 
 export function ShareButton({ title }: { title: string }) {
   async function share() {
-    const url = window.location.href;
+    const url = window.location.href
     if (navigator.share) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title, url })
       } catch {
         /* partage annulé */
       }
-      return;
+      return
     }
-    await navigator.clipboard.writeText(url);
-    toast.success("Lien copié");
+    await navigator.clipboard.writeText(url)
+    toast.success("Lien copié")
   }
 
   return (
@@ -26,7 +27,8 @@ export function ShareButton({ title }: { title: string }) {
       onClick={share}
       className="min-h-11 px-0 text-base text-foreground underline underline-offset-4"
     >
-      Partager
+      <ShareIcon className="size-4" />
+      <span className="">Partager</span>
     </Button>
-  );
+  )
 }
