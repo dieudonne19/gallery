@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { DM_Mono, Fraunces, Inter } from "next/font/google"
 
 import "./globals.css"
+import { RegisterServiceWorker } from "@/components/shared/RegisterServiceWorker"
 import { SkipLink } from "@/components/shared/SkipLink"
 import { Toaster } from "@/components/ui/sonner"
 import { baseOpenGraph, defaultShareImage } from "@/lib/metadata"
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   manifest: "/manifest.webmanifest",
+  // iOS : ouverture sans barre Safari une fois ajouté à l'écran d'accueil.
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
   authors: [{ name: AUTHOR_NAME }],
   creator: AUTHOR_NAME,
   // Chaque page est sa propre référence : /?categorie=cotes pointe vers /, pas de contenu en double.
@@ -50,6 +53,7 @@ export default function RootLayout({
         <SkipLink />
         {children}
         <Toaster />
+        <RegisterServiceWorker />
       </body>
     </html>
   )

@@ -55,6 +55,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: securityHeaders },
       { source: "/admin/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
+      // Le service worker ne doit jamais être servi depuis un cache : sinon une mise à jour n'arrive jamais.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] },
     ]
   },
 }

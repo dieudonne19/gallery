@@ -65,6 +65,7 @@ scripts/        db-init.mjs
 - **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
 - **Stockage** : bucket privé. Les photos sont servies par des adresses signées (7 jours, arrondies au jour pour que le cache d'images reste efficace). Les fichiers sont rangés sous `prod/` ou `dev/` selon l'environnement.
 - **Administration** : un seul administrateur, session signée dans un cookie. Chaque page et chaque action serveur revérifient la session, le `proxy` n'est qu'une première barrière. Les essais de connexion répétés sont limités, et le site envoie une politique de sécurité de contenu (CSP) ainsi que les en-têtes de sécurité usuels.
+- **Application installable (PWA)** : manifeste (`public/manifest.webmanifest`) et service worker (`public/sw.js`, enregistré en production seulement). Sans réseau, une page qui ne peut pas se charger affiche `/hors-ligne`. Le service worker ne garde en cache que les fichiers de l'interface : jamais les photos, ni `/admin`. Si la page hors ligne change, modifier `VERSION` dans `public/sw.js`.
 - **Référencement** : `robots.txt`, plan du site, adresses canoniques, données structurées, et une image d'aperçu de 1 200 × 630 pour chaque photo (`/photos/[id]/og`). L'administration est en `noindex`.
 
 ## Mise en ligne (Vercel)
