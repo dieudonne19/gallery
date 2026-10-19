@@ -1,17 +1,23 @@
-import Link from "next/link";
-import { Eyebrow } from "@/components/shared/Eyebrow";
-import type { Photo } from "@/features/photos/types";
-import { ShareButton } from "./ShareButton";
+import Link from "next/link"
+import { Eyebrow } from "@/components/shared/Eyebrow"
+import type { Photo } from "@/features/photos/types"
+import { ShareButton } from "./ShareButton"
+import { MapPinIcon } from "lucide-react"
 
 export function PhotoCaption({ photo }: { photo: Photo }) {
   // Lieu et année sont facultatifs : on n'affiche que ce qui existe.
-  const meta = [photo.place, photo.year].filter(Boolean).join(" · ");
+  const meta = [photo.place, photo.year].filter(Boolean).join(" · ")
 
   return (
-    <section className="flex flex-col gap-4 px-4 pb-8 pt-6 md:flex-row md:items-end md:justify-between md:gap-8 md:px-16 md:pb-[72px] md:pt-8">
+    <section className="flex flex-col gap-4 px-4 pt-6 pb-8 md:flex-row md:items-end md:justify-between md:gap-8 md:px-16 md:pt-8 md:pb-[72px]">
       <div className="flex flex-col gap-3">
-        {meta ? <Eyebrow>{meta}</Eyebrow> : null}
-        <h1 className="font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">
+        {meta ? (
+          <Eyebrow className="flex items-center gap-2">
+            <MapPinIcon className="size-4" />
+            {meta}
+          </Eyebrow>
+        ) : null}
+        <h1 className="font-serif text-[28px] leading-[1.1] font-normal tracking-tight md:text-4xl">
           {photo.title}
         </h1>
       </div>
@@ -26,5 +32,5 @@ export function PhotoCaption({ photo }: { photo: Photo }) {
         </Link>
       </div>
     </section>
-  );
+  )
 }
