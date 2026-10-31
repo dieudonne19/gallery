@@ -13,7 +13,7 @@ export async function AdminHeader() {
     <header className="sticky top-0 z-40 flex h-(--header-h) items-center justify-between border-b border-border bg-background px-4 md:px-16">
       <Link href={loggedIn ? "/admin" : "/"} className="flex min-h-11 items-center gap-3">
         <Logo />
-        <span className="hidden font-mono text-xs uppercase tracking-wider text-muted-foreground sm:inline">
+        <span className="hidden text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground sm:inline">
           Administration
         </span>
       </Link>
