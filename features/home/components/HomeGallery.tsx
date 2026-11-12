@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/shared/Eyebrow";
 import { getCategories } from "@/features/categories/lib/queries";
 import { getPhotos } from "@/features/photos/lib/queries";
-import { PhotoGrid } from "./PhotoGrid";
+import { PhotoGrid } from "@/features/photos/components/PhotoGrid";
 
 /** Galerie : la seule partie de l'accueil qui attend la base de données (voir le Suspense de HomePage). */
 export async function HomeGallery({ category: requested }: { category?: string }) {
@@ -14,9 +14,9 @@ export async function HomeGallery({ category: requested }: { category?: string }
   const photos = await getPhotos(category);
 
   return (
-    <section className="px-4 pb-16 pt-4 md:px-16 md:pb-24 md:pt-6">
-      {/* Largeur limitée : sur grand écran la galerie reste lisible d'un coup d'œil. */}
-      <div className="mx-auto w-full max-w-6xl">
+    <section className="px-4 pb-16 pt-4 md:px-8 md:pb-24 md:pt-6">
+      {/* Sur très grand écran, la mosaïque s'arrête à cinq colonnes confortables. */}
+      <div className="mx-auto w-full max-w-[1800px]">
         <div className="mb-4 flex justify-between">
           <Eyebrow className="flex items-center gap-2 normal-case">
             <Images aria-hidden="true" className="size-4" />

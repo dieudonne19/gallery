@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Eyebrow } from "@/components/shared/Eyebrow";
+import { cardRatio } from "../lib/masonry";
 import type { Photo } from "../types";
 
 interface PhotoThumbProps {
@@ -13,9 +13,8 @@ interface PhotoThumbProps {
   className?: string;
 }
 
-// La carte garde le format réel de la photo (verticale, horizontale, carrée).
-// Seuls les formats extrêmes sont légèrement recadrés, pour éviter une carte démesurée.
-const cardRatio = ({ width, height }: Photo) => Math.min(Math.max(width / height, 0.66), 2);
+// Largeur affichée selon le nombre de colonnes (voir .masonry dans globals.css).
+const SIZES = "(min-width: 1460px) 20vw, (min-width: 1060px) 25vw, (min-width: 640px) 33vw, 50vw";
 
 export function PhotoThumb({ photo, index = 0, priority = false, className }: PhotoThumbProps) {
   return (
@@ -32,19 +31,19 @@ export function PhotoThumb({ photo, index = 0, priority = false, className }: Ph
             alt={photo.alt}
             fill
             priority={priority}
-            sizes="(min-width: 1024px) 384px, 50vw"
+            sizes={SIZES}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
           />
         </span>
-        <span className="absolute inset-x-0 bottom-0 hidden translate-y-2 items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none md:flex">
+        <span className="masonry-overlay absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none">
           <span>{photo.title}</span>
           <span className="text-xs font-medium uppercase tracking-[0.12em]">Voir</span>
         </span>
       </Link>
-      {/* Pas de survol sur mobile : la légende reste visible. */}
-      <figcaption className="mt-2 flex justify-between gap-2 md:hidden">
-        <Eyebrow>{photo.place ?? photo.title}</Eyebrow>
-        {photo.year ? <Eyebrow>{photo.year}</Eyebrow> : null}
+      {/* Grille étroite (mobile) : pas de survol, la légende reste visible. Hauteur fixe : la mosaïque en tient compte. */}
+      <figcaption className="masonry-caption justify-between gap-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        <span className="truncate">{photo.place ?? photo.title}</span>
+        {photo.year ? <span>{photo.year}</span> : null}
       </figcaption>
     </figure>
   );
