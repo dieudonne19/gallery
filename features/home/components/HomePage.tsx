@@ -11,9 +11,11 @@ import { WordsMarquee } from "./WordsMarquee";
 interface HomePageProps {
   /** Catégorie demandée dans l'adresse (?categorie=). Vérifiée plus loin, avec la base. */
   category?: string;
+  /** Paquets de photos affichés d'emblée (?page=, lien « Voir plus » sans JavaScript). */
+  pages?: number;
 }
 
-export function HomePage({ category }: HomePageProps) {
+export function HomePage({ category, pages }: HomePageProps) {
   return (
     <>
       <SmoothScroll />
@@ -31,7 +33,7 @@ export function HomePage({ category }: HomePageProps) {
       <WordsMarquee />
 
       <Suspense fallback={<GallerySkeleton />}>
-        <HomeGallery category={category} />
+        <HomeGallery category={category} pages={pages} />
       </Suspense>
     </>
   );

@@ -5,9 +5,10 @@ import { AUTHOR_NAME, SITE_NAME, SITE_URL } from "@/lib/site";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string | string[] }>;
+  searchParams: Promise<{ categorie?: string | string[]; page?: string | string[] }>;
 }) {
-  const { categorie } = await searchParams;
+  const { categorie, page } = await searchParams;
+  const pages = typeof page === "string" && /^\d{1,2}$/.test(page) ? Number(page) : 1;
   return (
     <>
       <JsonLd
@@ -19,7 +20,7 @@ export default async function Page({
           ],
         }}
       />
-      <HomePage category={typeof categorie === "string" ? categorie : undefined} />
+      <HomePage category={typeof categorie === "string" ? categorie : undefined} pages={pages} />
     </>
   );
 }

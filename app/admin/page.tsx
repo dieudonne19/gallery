@@ -3,12 +3,12 @@ import Link from "next/link"
 import { Eyebrow } from "@/components/shared/Eyebrow"
 import { Button } from "@/components/ui/button"
 import { PhotoTable } from "@/features/admin/components/PhotoTable"
-import { getPhotos } from "@/features/photos/lib/queries"
+import { getAllPhotos } from "@/features/photos/lib/queries"
 import { requireAdmin } from "@/lib/auth"
 
 export default async function Page() {
   await requireAdmin()
-  const photos = await getPhotos()
+  const photos = await getAllPhotos()
 
   return (
     <>
