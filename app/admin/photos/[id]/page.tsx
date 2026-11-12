@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <h1 className="mb-8 font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">
+      <h1 className="mb-8 text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">
         Modifier la photo
       </h1>
       <PhotoForm action={updatePhoto.bind(null, id)} photo={photo} categories={await getCategories()} />

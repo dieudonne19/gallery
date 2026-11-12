@@ -14,7 +14,7 @@ export async function ContactPage({ photoId }: ContactPageProps) {
     <>
       <section className="px-4 pb-10 pt-8 md:px-16 md:pb-14 md:pt-[72px]">
         <Eyebrow className="mb-4">Contact</Eyebrow>
-        <h1 className="font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">
+        <h1 className="text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">
           Envoyez-moi une carte postale.
         </h1>
         <p className="mt-4 max-w-xl text-xl text-muted-foreground">

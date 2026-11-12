@@ -39,6 +39,22 @@ create table if not exists photos (
 alter table photos add column if not exists width integer not null default 3 check (width > 0);
 alter table photos add column if not exists height integer not null default 2 check (height > 0);
 
+-- Recherche insensible aux accents (features/photos/lib/queries.ts) : « cote » trouve « Côtes ».
+create extension if not exists unaccent;
+
+-- Couleur dominante de la photo (#rrggbb), affichée pendant son chargement. Vide pour les photos plus anciennes :
+-- pnpm db:colors la calcule (scripts/backfill-colors.mjs).
+alter table photos add column if not exists color text check (color ~ '^#[0-9a-f]{6}$');
+
+-- Réglages de prise de vue, facultatifs : pré-remplis depuis l'EXIF de la photo dans le formulaire d'ajout,
+-- modifiables. Jamais de position GPS.
+alter table photos add column if not exists camera text check (char_length(camera) <= 80);
+alter table photos add column if not exists lens text check (char_length(lens) <= 120);
+alter table photos add column if not exists focal_length real check (focal_length > 0 and focal_length <= 2000);
+alter table photos add column if not exists aperture real check (aperture >= 0.5 and aperture <= 64);
+alter table photos add column if not exists exposure_time text check (exposure_time ~ '^(1/[0-9]{1,5}|[0-9]{1,4}(\.[0-9])?)$');
+alter table photos add column if not exists iso integer check (iso between 1 and 1000000);
+
 -- Bases créées avec la liste fixe de quatre catégories : cette contrainte est remplacée par la table categories.
 alter table photos drop constraint if exists photos_category_check;
 

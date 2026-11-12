@@ -1,5 +1,6 @@
 import sharp from "sharp"
 
+import { dominantColor } from "./dominant-color"
 import { MAX_DIMENSION, MAX_IMAGE_BYTES } from "./limits"
 
 /** Toute photo est enregistrée en WebP : c'est ce qui part dans le bucket. */
@@ -8,6 +9,8 @@ export interface ValidImage {
   /** Dimensions après redressement et redimensionnement. */
   width: number
   height: number
+  /** Couleur dominante (#rrggbb), affichée pendant le chargement de la photo. */
+  color: string
   extension: "webp"
   contentType: "image/webp"
 }
@@ -28,14 +31,17 @@ function isSupportedImage(bytes: Uint8Array) {
  * Redimensionne et convertit en WebP. Remet la photo à l'endroit (EXIF) puis efface les métadonnées,
  * dont la position GPS : rien de ce qui est enregistré ne révèle où la photo a été prise.
  */
-export async function optimizeImage(bytes: Uint8Array): Promise<{ bytes: Uint8Array; width: number; height: number }> {
+export async function optimizeImage(
+  bytes: Uint8Array,
+): Promise<{ bytes: Uint8Array; width: number; height: number; color: string }> {
   // Plafond de pixels : un fichier léger peut s'ouvrir en plusieurs Go de mémoire (50 Mpx = un très gros capteur).
   const { data, info } = await sharp(bytes, { limitInputPixels: 100_000_000 })
     .rotate()
     .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
     .webp({ quality: 82 })
     .toBuffer({ resolveWithObject: true })
-  return { bytes: new Uint8Array(data), width: info.width, height: info.height }
+  const optimized = new Uint8Array(data)
+  return { bytes: optimized, width: info.width, height: info.height, color: await dominantColor(optimized) }
 }
 
 /** Retourne `null` si aucun fichier n'a été choisi, sinon l'image prête à enregistrer ou un message d'erreur. */
