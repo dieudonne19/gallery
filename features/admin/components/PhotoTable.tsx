@@ -25,7 +25,7 @@ export function PhotoTable({ photos }: { photos: Photo[] }) {
         {photos.map((photo, index) => (
           <TableRow key={photo.id}>
             <TableCell>
-              <div className="relative aspect-[4/3] w-16 bg-muted">
+              <div className="relative aspect-[4/3] w-16 bg-muted" style={{ backgroundColor: photo.color }}>
                 <Image src={photo.src} alt="" fill sizes="64px" className="object-cover" />
               </div>
             </TableCell>

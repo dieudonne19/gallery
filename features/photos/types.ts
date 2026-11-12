@@ -17,6 +17,8 @@ export interface Photo {
   /** Dimensions de la photo enregistrée : chaque carte garde le format réel de sa photo. */
   width: number;
   height: number;
+  /** Couleur dominante (#rrggbb), affichée pendant le chargement. Absente pour une photo ancienne pas encore traitée. */
+  color?: string;
   /** Facultatif : la page n'affiche rien si absent. */
   place?: string;
   /** Facultatif : peut venir des données EXIF de la photo. */

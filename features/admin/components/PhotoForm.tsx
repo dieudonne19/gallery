@@ -99,7 +99,7 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
         error={errors.image}
       >
         {photo ? (
-          <div className="relative aspect-[3/2] w-48 bg-muted">
+          <div className="relative aspect-[3/2] w-48 bg-muted" style={{ backgroundColor: photo.color }}>
             <Image src={photo.src} alt={photo.alt} fill sizes="192px" className="object-cover" />
           </div>
         ) : null}

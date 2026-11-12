@@ -32,6 +32,7 @@ pnpm dev                                 # http://localhost:3000
 | `pnpm test` | Tests (`node:test`) : session, mot de passe, adresses de catégories |
 | `pnpm db:init` | Applique `db/schema.sql` sur la base de développement |
 | `pnpm db:init:prod` | Même chose sur la base de production (`.env.production.local`) |
+| `pnpm db:colors` / `pnpm db:colors:prod` | Calcule la couleur dominante des photos qui n'en ont pas encore (à lancer une fois après `db:init`) |
 
 `db/schema.sql` est écrit pour pouvoir être relancé sans risque. Il n'y a pas d'outil de migration : une évolution du schéma s'ajoute dans ce fichier, puis on relance la commande.
 
@@ -63,6 +64,7 @@ scripts/        db-init.mjs
 ## Fonctionnement
 
 - **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Couleur dominante** : calculée à l'envoi (sharp) et enregistrée dans `photos.color`. Chaque carte l'affiche pendant que la photo se charge, puis la photo apparaît en fondu. Pour les photos ajoutées avant cette colonne : `pnpm db:colors` (ou `db:colors:prod`), relançable sans risque.
 - **Stockage** : bucket privé. Les photos sont servies par des adresses signées (7 jours, arrondies au jour pour que le cache d'images reste efficace). Les fichiers sont rangés sous `prod/` ou `dev/` selon l'environnement.
 - **Administration** : un seul administrateur, session signée dans un cookie. Chaque page et chaque action serveur revérifient la session, le `proxy` n'est qu'une première barrière. Les essais de connexion répétés sont limités, et le site envoie une politique de sécurité de contenu (CSP) ainsi que les en-têtes de sécurité usuels.
 - **Application installable (PWA)** : manifeste (`public/manifest.webmanifest`) et service worker (`public/sw.js`, enregistré en production seulement). Sans réseau, une page qui ne peut pas se charger affiche `/hors-ligne`. Le service worker ne garde en cache que les fichiers de l'interface : jamais les photos, ni `/admin`. Si la page hors ligne change, modifier `VERSION` dans `public/sw.js`.
@@ -72,7 +74,7 @@ scripts/        db-init.mjs
 
 1. Ajouter les variables d'environnement. `DATABASE_URL` pointe vers la branche Neon `production` pour l'environnement Production et vers la branche `dev` pour Preview, jamais vers la production.
 2. Renseigner `NEXT_PUBLIC_SITE_URL` avec le vrai domaine.
-3. Avant le premier chargement en production, et après chaque ajout au schéma : `pnpm db:init:prod`. Le build, lui, ne touche jamais à la base.
+3. Avant le premier chargement en production, et après chaque ajout au schéma : `pnpm db:init:prod`, puis `pnpm db:colors:prod` si des photos n'ont pas encore de couleur. Le build, lui, ne touche jamais à la base.
 4. Une variable ajoutée ou modifiée demande un nouveau déploiement.
 
 Les fonctions sont placées à Francfort (`vercel.json`, région `fra1`), comme la base et le bucket.

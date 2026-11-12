@@ -23,7 +23,10 @@ function NavItem({
       className={`flex flex-col gap-3 ${align === "end" ? "items-end" : "items-start"}`}
     >
       <Eyebrow>{label}</Eyebrow>
-      <div className="relative aspect-[3/2] w-full bg-muted md:w-[280px]">
+      <div
+        className="relative aspect-[3/2] w-full rounded-xl bg-muted md:w-[280px]"
+        style={{ backgroundColor: photo.color }}
+      >
         <Image
           src={photo.src}
           alt={photo.alt}

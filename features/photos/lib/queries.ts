@@ -15,17 +15,24 @@ interface PhotoRow {
   year: number | null;
   width: number;
   height: number;
+  color: string | null;
 }
 
 // Les colonnes facultatives vides (null en base) deviennent absentes ; src devient une URL affichable.
 async function toPhoto(row: PhotoRow): Promise<Photo> {
-  return { ...row, src: await getPhotoUrl(row.src), place: row.place ?? undefined, year: row.year ?? undefined };
+  return {
+    ...row,
+    src: await getPhotoUrl(row.src),
+    place: row.place ?? undefined,
+    year: row.year ?? undefined,
+    color: row.color ?? undefined,
+  };
 }
 
 // cache() : une seule requête par rendu, même si plusieurs composants la demandent.
 const getAllPhotos = cache(async (): Promise<Photo[]> => {
   const rows = await sql`
-    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height
+    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height, p.color
     from photos p
     join categories c on c.id = p.category
     order by p.position, p.created_at desc`;

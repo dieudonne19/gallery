@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test \"lib/**/*.test.ts\" \"features/**/*.test.ts\"",
     "db:init": "node --env-file=.env.development.local scripts/db-init.mjs",
-    "db:init:prod": "node --env-file=.env.production.local scripts/db-init.mjs"
+    "db:init:prod": "node --env-file=.env.production.local scripts/db-init.mjs",
+    "db:colors": "node --env-file=.env.development.local scripts/backfill-colors.mjs",
+    "db:colors:prod": "node --env-file=.env.production.local scripts/backfill-colors.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1152.0",

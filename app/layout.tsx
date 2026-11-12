@@ -44,6 +44,12 @@ export default function RootLayout({
       lang="fr"
       className={`${fontSans.variable} ${fontSerif.variable} font-sans antialiased`}
     >
+      <head>
+        {/* Sans JavaScript, les photos n'attendent pas de fondu (features/photos/components/FadeInImage.tsx). */}
+        <noscript>
+          <style>{".fade-in-image{opacity:1!important}"}</style>
+        </noscript>
+      </head>
       <body>
         <SkipLink />
         {children}

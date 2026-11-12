@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { cardRatio } from "../lib/masonry";
+import { FadeInImage } from "./FadeInImage";
 import type { Photo } from "../types";
 
 interface PhotoThumbProps {
@@ -21,18 +21,19 @@ export function PhotoThumb({ photo, index = 0, priority = false, className }: Ph
     <figure className={cn("photo-card flex flex-col", className)} style={{ "--i": index } as React.CSSProperties}>
       <Link
         href={`/photos/${photo.id}`}
-        style={{ aspectRatio: cardRatio(photo) }}
+        // Couleur dominante de la photo en attendant qu'elle se charge (bg-muted si elle n'est pas connue).
+        style={{ aspectRatio: cardRatio(photo), backgroundColor: photo.color }}
         className="group relative isolate block overflow-hidden rounded-xl bg-muted"
       >
         {/* Le conteneur porte l'entrée (la photo se dépose) ; l'image garde le zoom au survol. */}
         <span className="photo-card-image absolute inset-0 block">
-          <Image
+          <FadeInImage
             src={photo.src}
             alt={photo.alt}
             fill
             priority={priority}
             sizes={SIZES}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
+            className="object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
           />
         </span>
         <span className="masonry-overlay absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-between bg-gradient-to-t from-foreground/55 to-transparent p-3 text-white opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:transition-none">

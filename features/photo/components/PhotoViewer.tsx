@@ -27,6 +27,7 @@ export function PhotoViewer({ photo }: { photo: Photo }) {
           width={photo.width}
           height={photo.height}
           priority
+          style={{ backgroundColor: photo.color }}
           sizes="(min-width: 768px) calc(100vw - 8rem), 100vw"
           className="h-auto max-h-[80svh] w-auto max-w-full rounded-xl bg-muted object-contain"
         />
