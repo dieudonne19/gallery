@@ -39,6 +39,9 @@ create table if not exists photos (
 alter table photos add column if not exists width integer not null default 3 check (width > 0);
 alter table photos add column if not exists height integer not null default 2 check (height > 0);
 
+-- Recherche insensible aux accents (features/photos/lib/queries.ts) : « cote » trouve « Côtes ».
+create extension if not exists unaccent;
+
 -- Couleur dominante de la photo (#rrggbb), affichée pendant son chargement. Vide pour les photos plus anciennes :
 -- pnpm db:colors la calcule (scripts/backfill-colors.mjs).
 alter table photos add column if not exists color text check (color ~ '^#[0-9a-f]{6}$');

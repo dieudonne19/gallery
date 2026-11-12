@@ -4,6 +4,7 @@ import { sql } from "@/lib/db";
 import { getPhotoUrl } from "@/lib/storage";
 import type { CategoryId, Photo } from "../types";
 import { encodeCursor, type PhotoCursor } from "./cursor";
+import { searchPatterns } from "./search";
 
 /** Nombre de photos par paquet dans la galerie (le premier paquet est rendu par le serveur). */
 export const PAGE_SIZE = 24;
@@ -61,24 +62,38 @@ export interface PhotoPage {
 }
 
 /**
- * Un paquet de photos de la galerie, éventuellement filtré par catégorie. Sans curseur : le début de la galerie.
+ * Recherche : chaque mot doit apparaître dans le titre, le lieu, la description, l'année ou le nom de la catégorie,
+ * sans tenir compte des accents ni des majuscules. À cette échelle (quelques centaines de photos), un parcours
+ * complet prend moins d'une milliseconde : un index de recherche n'apporterait rien.
+ */
+
+/**
+ * Un paquet de photos de la galerie, éventuellement filtré par catégorie et par recherche. Sans curseur : le début.
  * L'ordre (position, date d'ajout récente d'abord, id) est total : le curseur désigne une place exacte.
  */
 export async function getPhotoPage({
   category,
+  search,
   cursor,
   limit = PAGE_SIZE,
 }: {
   category?: CategoryId;
+  search?: string;
   cursor?: PhotoCursor | null;
   limit?: number;
 }): Promise<PhotoPage> {
+  const patterns = searchPatterns(search);
   const rows = await sql`
     select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height, p.color,
            p.position, p.created_at::text as "createdAt"
     from photos p
     join categories c on c.id = p.category
     where (${category ?? null}::text is null or p.category = ${category ?? null})
+      and not exists (
+        select 1 from unnest(${patterns}::text[]) as w(pattern)
+        where unaccent(lower(concat_ws(' ', p.title, p.place, p.alt, p.year, c.label)))
+          not like unaccent(lower(w.pattern)) escape '\\'
+      )
       and (
         ${cursor ? 1 : null}::int is null
         or p.position > ${cursor?.position ?? 0}
@@ -100,10 +115,19 @@ export async function getPhotoPage({
   return { photos: await toPhotos(page), nextCursor };
 }
 
-/** Nombre de photos de la galerie (ou d'une catégorie). */
-export async function getPhotoCount(category?: CategoryId): Promise<number> {
+/** Nombre de photos de la galerie (ou d'une catégorie, ou d'une recherche : mêmes règles que getPhotoPage). */
+export async function getPhotoCount({ category, search }: { category?: CategoryId; search?: string } = {}): Promise<number> {
+  const patterns = searchPatterns(search);
   const [row] = await sql`
-    select count(*)::int as count from photos where (${category ?? null}::text is null or category = ${category ?? null})`;
+    select count(*)::int as count
+    from photos p
+    join categories c on c.id = p.category
+    where (${category ?? null}::text is null or p.category = ${category ?? null})
+      and not exists (
+        select 1 from unnest(${patterns}::text[]) as w(pattern)
+        where unaccent(lower(concat_ws(' ', p.title, p.place, p.alt, p.year, c.label)))
+          not like unaccent(lower(w.pattern)) escape '\\'
+      )`;
   return row.count as number;
 }
 

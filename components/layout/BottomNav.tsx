@@ -1,6 +1,7 @@
 import { HouseIcon, InfoIcon, MailIcon } from "lucide-react";
 
 import { NavLink } from "./NavLink";
+import { SearchShortcut } from "./SearchShortcut";
 
 const item =
   "flex min-h-12 min-w-16 flex-col items-center justify-center gap-0.5 rounded-2xl px-3 text-xs font-medium text-muted-foreground transition-colors aria-[current=page]:text-foreground";
@@ -16,6 +17,7 @@ export function BottomNav() {
         <HouseIcon aria-hidden="true" className="size-6" />
         Accueil
       </NavLink>
+      <SearchShortcut className={item} />
       <NavLink href="/a-propos" className={item}>
         <InfoIcon aria-hidden="true" className="size-6" />
         À propos

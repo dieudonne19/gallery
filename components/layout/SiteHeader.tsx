@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { HeaderOnScroll } from "./HeaderOnScroll";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import { PortfolioLink } from "./PortfolioLink";
+import { SearchBar, SearchBarFallback } from "./SearchBar";
 import { NAV_LINKS, pillLink } from "./nav";
 
 /** En-tête collant et compact. Sur mobile, la navigation passe dans la barre du bas (BottomNav). */
@@ -15,7 +17,12 @@ export function SiteHeader() {
         <Logo />
       </Link>
 
-      <div className="flex-1" />
+      {/* Grande barre de recherche, au centre. */}
+      <div className="min-w-0 flex-1">
+        <Suspense fallback={<SearchBarFallback />}>
+          <SearchBar />
+        </Suspense>
+      </div>
 
       <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
         {NAV_LINKS.map((link) => (

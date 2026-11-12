@@ -10,23 +10,26 @@ const MAX_PAGES = 20;
 
 interface HomeGalleryProps {
   category?: string;
+  /** Recherche (?q=), déjà nettoyée. */
+  search?: string;
   /** Nombre de paquets à afficher d'emblée (lien « Voir plus » sans JavaScript). */
   pages?: number;
 }
 
 /** Galerie : la seule partie de l'accueil qui attend la base de données (voir le Suspense de HomePage). */
-export async function HomeGallery({ category: requested, pages = 1 }: HomeGalleryProps) {
+export async function HomeGallery({ category: requested, search, pages = 1 }: HomeGalleryProps) {
   // Une catégorie inconnue dans l'adresse est ignorée : on montre toutes les photos.
   const categories = await getCategories();
   const category = categories.some((c) => c.id === requested) ? requested : undefined;
   const shown = Math.min(Math.max(1, pages), MAX_PAGES);
   const [{ photos, nextCursor }, count] = await Promise.all([
-    getPhotoPage({ category, limit: PAGE_SIZE * shown }),
-    getPhotoCount(category),
+    getPhotoPage({ category, search, limit: PAGE_SIZE * shown }),
+    getPhotoCount({ category, search }),
   ]);
 
   const more = new URLSearchParams();
   if (category) more.set("categorie", category);
+  if (search) more.set("q", search);
   more.set("page", String(shown + 1));
 
   return (
@@ -37,6 +40,7 @@ export async function HomeGallery({ category: requested, pages = 1 }: HomeGaller
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Images aria-hidden="true" className="size-4" />
             {count} {count > 1 ? "photos" : "photo"}
+            {search ? ` pour « ${search} »` : ""}
           </p>
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <ArrowDownWideNarrow aria-hidden="true" className="size-4" />
@@ -46,20 +50,28 @@ export async function HomeGallery({ category: requested, pages = 1 }: HomeGaller
         {photos.length > 0 ? (
           <InfiniteGallery
             // Nouveau filtre : la galerie repart du premier paquet.
-            key={`${category ?? ""}-${shown}`}
+            key={`${category ?? ""}-${search ?? ""}-${shown}`}
             initialPhotos={photos}
             initialCursor={nextCursor}
             category={category}
+            search={search}
             moreHref={`/?${more}`}
           />
         ) : (
-          <div className="flex flex-col items-center gap-2 py-16 text-center">
+          <div className="flex flex-col items-center gap-3 py-16 text-center">
             <p className="text-xl text-muted-foreground">
-              {category ? "Aucune photo dans cette catégorie pour l’instant." : "Les premières photos arrivent bientôt."}
+              {search
+                ? `Aucune photo pour « ${search} »${category ? " dans cette catégorie" : ""}.`
+                : category
+                  ? "Aucune photo dans cette catégorie pour l’instant."
+                  : "Les premières photos arrivent bientôt."}
             </p>
-            {category ? (
-              <Link href="/" className="flex min-h-11 items-center underline underline-offset-4">
-                Voir toutes les photos
+            {search || category ? (
+              <Link
+                href={search && category ? `/?categorie=${category}` : "/"}
+                className="inline-flex min-h-11 items-center rounded-full bg-secondary px-5 font-medium"
+              >
+                {search ? "Effacer la recherche" : "Voir toutes les photos"}
               </Link>
             ) : null}
           </div>

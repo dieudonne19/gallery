@@ -11,6 +11,7 @@ interface InfiniteGalleryProps {
   initialPhotos: Photo[]
   initialCursor?: string
   category?: string
+  search?: string
   /** Lien « Voir plus » sans JavaScript : la même page avec un paquet de plus, rendue par le serveur. */
   moreHref: string
 }
@@ -20,7 +21,7 @@ interface InfiniteGalleryProps {
  * Les nouvelles cartes s'ajoutent à la mosaïque sans déplacer celles déjà affichées (le placement d'une carte
  * ne dépend que des cartes qui la précèdent). Sans JavaScript, le lien « Voir plus » recharge la page avec plus de photos.
  */
-export function InfiniteGallery({ initialPhotos, initialCursor, category, moreHref }: InfiniteGalleryProps) {
+export function InfiniteGallery({ initialPhotos, initialCursor, category, search, moreHref }: InfiniteGalleryProps) {
   const [photos, setPhotos] = useState(initialPhotos)
   const [cursor, setCursor] = useState(initialCursor)
   const [failed, setFailed] = useState(false)
@@ -32,7 +33,7 @@ export function InfiniteGallery({ initialPhotos, initialCursor, category, moreHr
     setFailed(false)
     startTransition(async () => {
       try {
-        const page = await loadMorePhotos(cursor, category)
+        const page = await loadMorePhotos(cursor, category, search)
         setPhotos((current) => {
           // Une photo déjà affichée (ordre changé entre-temps dans l'administration) n'est pas ajoutée deux fois.
           const seen = new Set(current.map((p) => p.id))
@@ -43,7 +44,7 @@ export function InfiniteGallery({ initialPhotos, initialCursor, category, moreHr
         setFailed(true)
       }
     })
-  }, [cursor, category, pending])
+  }, [cursor, category, search, pending])
 
   // Le paquet suivant se charge un peu avant d'atteindre le bas : le défilement ne bute pas.
   useEffect(() => {
