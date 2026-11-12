@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Thème sombre : suit le réglage du système. Les classes dark: des composants shadcn s'activent avec lui. */
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* Thème clair seulement : les classes dark: des composants shadcn ne s'activent que sous une classe .dark, jamais posée. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Thème « mosaïque » : interface blanche et neutre, ce sont les photos qui portent la couleur.
- * L'accent terracotta (bouton principal, focus) reste celui de Hitako.
- * Contrastes vérifiés (WCAG AA) : texte 18,9:1, texte secondaire 6,4:1 (5,5:1 sur les pastilles), bordure des champs 3,4:1.
+ * L'accent rouge (bouton principal, focus) reprend celui de Pinterest.
+ * Contrastes vérifiés (WCAG AA) : texte 18,9:1, texte secondaire 6,4:1 (5,5:1 sur les pastilles), bordure des champs 3,4:1,
+ * accent 4,8:1 sur blanc (et texte blanc sur l'accent).
  */
 :root {
   --background: #ffffff;
@@ -16,7 +17,7 @@
   --card-foreground: #111111;
   --popover: #ffffff;
   --popover-foreground: #111111;
-  --primary: #b4532a;
+  --primary: #e60023;
   --primary-foreground: #ffffff;
   /* Pastilles, boutons ronds, champ de recherche. */
   --secondary: #efefef;
@@ -29,39 +30,14 @@
   --border: #e4e4e4;
   /* Bordure des champs : 3,4:1 sur le fond (seuil WCAG 1.4.11 = 3:1), contrairement aux séparateurs. */
   --input: #8a8a8a;
-  --ring: #b4532a;
+  --ring: #e60023;
   --radius: 0.5rem;
   --shadow-card: 0 1px 20px rgb(0 0 0 / 0.1);
-  color-scheme: light dark;
+  color-scheme: light;
   /* Hauteur de l'en-tête collant : la barre des filtres se cale dessous. */
   --header-h: 4rem;
   /* Barre de navigation du bas, sur mobile. */
   --bottom-nav-h: 4rem;
-}
-
-/* Sombre : texte 16,6:1, texte secondaire 7,9:1 (6:1 sur les pastilles), accent 6,3:1. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212;
-    --foreground: #f1f1f1;
-    --card: #1e1e1e;
-    --card-foreground: #f1f1f1;
-    --popover: #1e1e1e;
-    --popover-foreground: #f1f1f1;
-    --primary: #e07a50;
-    --primary-foreground: #121212;
-    --secondary: #2b2b2b;
-    --secondary-foreground: #f1f1f1;
-    --muted: #262626;
-    --muted-foreground: #a8a8a8;
-    --accent: #2b2b2b;
-    --accent-foreground: #f1f1f1;
-    --destructive: #f2b8b5;
-    --border: #333333;
-    --input: #7a7a7a;
-    --ring: #e07a50;
-    --shadow-card: 0 1px 20px rgb(0 0 0 / 0.5);
-  }
 }
 
 /* Objet qui reste clair en thème sombre (carte postale de la page Contact). */

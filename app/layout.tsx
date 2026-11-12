@@ -30,11 +30,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  // Barre du navigateur (mobile) : la couleur du fond, en clair comme en sombre.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#121212" },
-  ],
+  // Barre du navigateur (mobile) : la couleur du fond.
+  themeColor: "#ffffff",
 }
 
 export default function RootLayout({
