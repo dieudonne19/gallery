@@ -3,7 +3,7 @@
 Mon portfolio de photographies de paysages, avec son espace d'administration. Je le fais par passion : rien n'y est à vendre.
 
 - **Site public** : accueil avec galerie et filtre par catégorie, une page par photo, contact, à propos, mentions légales et droits d'utilisation.
-- **Administration** (`/admin`, protégée par mot de passe) : ajouter, modifier, ranger et supprimer les photos et les catégories.
+- **Administration** (`/admin`, protégée par mot de passe) : ajouter (une à une ou par série, en glissant les fichiers), modifier, ranger et supprimer les photos et les catégories.
 
 ## Technologies
 

@@ -35,11 +35,13 @@ async function readForm(formData: FormData, imageRequired: boolean) {
   return { data, values, errors, image: image && !("error" in image) ? image : null }
 }
 
-export async function createPhoto(_: PhotoFormState, formData: FormData): Promise<PhotoFormState> {
-  await requireAdmin()
-  const { data, values, errors, image } = await readForm(formData, true)
-  if (!data || !image || Object.keys(errors).length) return { errors, values }
+type ReadForm = Awaited<ReturnType<typeof readForm>>
 
+/**
+ * Enregistre une photo validée : fichier dans le bucket, puis ligne en base (en tête de la galerie).
+ * En cas d'échec, le fichier déjà envoyé est effacé. Partagé par l'ajout simple et l'envoi en série.
+ */
+async function insertPhoto(data: NonNullable<ReadForm["data"]>, image: NonNullable<ReadForm["image"]>) {
   const id = randomBytes(4).toString("hex")
   const key = newKey(image.extension)
   try {
@@ -50,14 +52,46 @@ export async function createPhoto(_: PhotoFormState, formData: FormData): Promis
       values (${id}, ${key}, ${data.title}, ${data.alt}, ${data.category}, ${data.place}, ${data.year},
               (select coalesce(min(position), 0) - 1 from photos), ${image.width}, ${image.height}, ${image.color},
               ${data.camera}, ${data.lens}, ${data.focalLength}, ${data.aperture}, ${data.exposureTime}, ${data.iso})`
+    return { id }
   } catch (error) {
-    console.error("createPhoto failed", error)
+    console.error("insertPhoto failed", error)
     await deleteQuietly(key)
-    return { message: "La photo n'a pas pu être enregistrée. Réessayez dans un instant.", values }
+    return { error: "La photo n'a pas pu être enregistrée. Réessayez dans un instant." }
   }
+}
+
+export async function createPhoto(_: PhotoFormState, formData: FormData): Promise<PhotoFormState> {
+  await requireAdmin()
+  const { data, values, errors, image } = await readForm(formData, true)
+  if (!data || !image || Object.keys(errors).length) return { errors, values }
+
+  const saved = await insertPhoto(data, image)
+  if ("error" in saved) return { message: saved.error, values }
 
   refreshPages()
   redirect("/admin")
+}
+
+export type BatchPhotoResult = { ok: true; id: string } | { ok: false; errors?: PhotoFormState["errors"]; message?: string }
+
+/**
+ * Envoi en série (features/admin/components/BatchUpload.tsx) : une photo par requête, à cause de la limite
+ * de 4,5 Mo par requête de l'hébergeur. Mêmes contrôles que l'ajout simple ; ni redirection ni rafraîchissement
+ * (fait une seule fois à la fin, par finishBatch).
+ */
+export async function addBatchPhoto(formData: FormData): Promise<BatchPhotoResult> {
+  await requireAdmin()
+  const { data, errors, image } = await readForm(formData, true)
+  if (!data || !image || Object.keys(errors).length) return { ok: false, errors }
+
+  const saved = await insertPhoto(data, image)
+  return "error" in saved ? { ok: false, message: saved.error } : { ok: true, id: saved.id }
+}
+
+/** Fin d'un envoi en série : les pages du site sont rafraîchies une seule fois. */
+export async function finishBatch() {
+  await requireAdmin()
+  refreshPages()
 }
 
 export async function updatePhoto(id: string, _: PhotoFormState, formData: FormData): Promise<PhotoFormState> {

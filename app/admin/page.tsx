@@ -17,13 +17,23 @@ export default async function Page() {
           <Eyebrow>{photos.length} photos</Eyebrow>
           <h1 className="text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">Photos</h1>
         </div>
-        <Button
-          nativeButton={false}
-          render={<Link href="/admin/photos/nouveau" />}
-          className="h-11 px-6 text-base"
-        >
-          Ajouter une photo
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            nativeButton={false}
+            render={<Link href="/admin/photos/plusieurs" />}
+            variant="outline"
+            className="h-11 px-6 text-base"
+          >
+            Ajouter plusieurs photos
+          </Button>
+          <Button
+            nativeButton={false}
+            render={<Link href="/admin/photos/nouveau" />}
+            className="h-11 px-6 text-base"
+          >
+            Ajouter une photo
+          </Button>
+        </div>
       </div>
 
       {photos.length === 0 ? (
