@@ -1,3 +1,4 @@
+import { hasExif } from "./exif"
 import { MAX_DIMENSION, MAX_IMAGE_BYTES } from "./limits"
 
 // En dessous, une photo déjà aux bonnes dimensions est envoyée telle quelle : inutile de la recompresser.
@@ -9,7 +10,8 @@ const encode = (canvas: HTMLCanvasElement, type: string, quality: number) =>
 /**
  * Réduit une photo dans le navigateur avant l'envoi : 2000 px au plus, en WebP (JPEG si le navigateur ne sait pas
  * encoder le WebP). Une photo de 5 à 10 Mo passe ainsi sous la limite de 4,5 Mo de l'hébergeur.
- * Le sens de la photo (EXIF) est appliqué ici. Le serveur refait de toute façon sa propre vérification.
+ * Le sens de la photo (EXIF) est appliqué ici, puis les métadonnées sont effacées (dont le GPS).
+ * Le serveur refait de toute façon sa propre vérification et efface à nouveau tout ce qui reste.
  * Si la réduction est impossible (format non lu par le navigateur), renvoie le fichier d'origine.
  */
 export async function resizeForUpload(file: File): Promise<File> {
@@ -19,7 +21,14 @@ export async function resizeForUpload(file: File): Promise<File> {
     const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" })
     const longest = Math.max(bitmap.width, bitmap.height)
 
-    if (file.size <= KEEP_AS_IS_BYTES && longest <= MAX_DIMENSION && /^image\/(jpeg|webp)$/.test(file.type)) {
+    // Une photo avec des métadonnées (EXIF, dont parfois la position GPS) est toujours réencodée :
+    // le canvas les efface, rien ne part du navigateur.
+    if (
+      file.size <= KEEP_AS_IS_BYTES &&
+      longest <= MAX_DIMENSION &&
+      /^image\/(jpeg|webp)$/.test(file.type) &&
+      !hasExif(await file.arrayBuffer())
+    ) {
       bitmap.close()
       return file
     }

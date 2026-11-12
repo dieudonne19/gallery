@@ -3,11 +3,11 @@
 Mon portfolio de photographies de paysages, avec son espace d'administration. Je le fais par passion : rien n'y est à vendre.
 
 - **Site public** : accueil avec galerie et filtre par catégorie, une page par photo, contact, à propos, mentions légales et droits d'utilisation.
-- **Administration** (`/admin`, protégée par mot de passe) : ajouter, modifier, ranger et supprimer les photos et les catégories.
+- **Administration** (`/admin`, protégée par mot de passe) : ajouter (une à une ou par série, en glissant les fichiers), modifier, ranger et supprimer les photos et les catégories.
 
 ## Technologies
 
-Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, GSAP, Lenis.
+Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui.
 Base de données et stockage des photos : Neon. Hébergement : Vercel.
 
 ## Démarrer en local
@@ -29,9 +29,10 @@ pnpm dev                                 # http://localhost:3000
 | `pnpm build` / `pnpm start` | Build et serveur de production |
 | `pnpm typecheck` | Vérification TypeScript |
 | `pnpm lint` | ESLint |
-| `pnpm test` | Tests (`node:test`) : session, mot de passe, adresses de catégories |
+| `pnpm test` | Tests (`node:test`) : session, mot de passe, adresses de catégories, mosaïque, curseur, recherche, EXIF, formulaire |
 | `pnpm db:init` | Applique `db/schema.sql` sur la base de développement |
 | `pnpm db:init:prod` | Même chose sur la base de production (`.env.production.local`) |
+| `pnpm db:colors` / `pnpm db:colors:prod` | Calcule la couleur dominante des photos qui n'en ont pas encore (à lancer une fois après `db:init`) |
 
 `db/schema.sql` est écrit pour pouvoir être relancé sans risque. Il n'y a pas d'outil de migration : une évolution du schéma s'ajoute dans ce fichier, puis on relance la commande.
 
@@ -52,7 +53,7 @@ Le modèle est `.env.example`. Les fichiers `.env*.local` ne sont jamais commit�
 ## Organisation du code
 
 ```
-app/            routes, volontairement fines : (site) public, admin, robots, sitemap, aperçu de partage
+app/            routes, volontairement fines : (site) public (dont (gallery) : accueil, photos et leur fenêtre), admin, robots, sitemap
 features/       une fonctionnalité par dossier : home, photo, photos, categories, admin, contact, about, legal
 components/     layout, éléments partagés, composants shadcn/ui
 lib/            base de données, session, stockage, métadonnées
@@ -62,7 +63,13 @@ scripts/        db-init.mjs
 
 ## Fonctionnement
 
-- **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus ; une photo qui contient des métadonnées EXIF est toujours réencodée, pour qu'aucune position GPS ne quitte le navigateur), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Apparence** : interface blanche et neutre façon mosaïque d'inspiration (thème sombre automatique), accent terracotta de Hitako. Tokens dans `app/globals.css`. En-tête collant qui se masque en descendant ; sur mobile, barre de navigation en bas. Animations en CSS (et View Transitions pour le changement de filtre), toutes coupées avec « réduire les animations ».
+- **Fenêtre des photos** : depuis le site, une photo s'ouvre dans une fenêtre par-dessus la page en cours (routes parallèle et interceptée : `app/(site)/(gallery)/@modal/(.)photos/[id]`). L'adresse devient `/photos/[id]` ; un rechargement ou un lien partagé affiche la page complète. Échap, ✕, un clic à côté ou le retour du navigateur la ferment ; ← et → passent aux photos voisines.
+- **Galerie par paquets** : le serveur rend les 24 premières photos ; les suivantes se chargent à l'approche du bas de la page (`features/photos/actions/load-more.ts`), avec un curseur sur l'ordre de la galerie (ni doublon ni trou si une photo est ajoutée entre-temps). Seules les URL du paquet affiché sont signées. Sans JavaScript, « Voir plus de photos » recharge la page avec un paquet de plus (`?page=`).
+- **Prise de vue** : appareil, objectif, focale, ouverture, vitesse et ISO, lus dans l'EXIF du fichier d'origine, dans le navigateur (`features/admin/lib/exif.ts`, sans dépendance, qui ne lit jamais le GPS), avant la réduction. Ils pré-remplissent le formulaire, restent modifiables et s'affichent dans la grande vue de la photo.
+- **Recherche** : barre de l'en-tête, adresse `/?q=` (combinable avec `?categorie=`, en `noindex`). Chaque mot doit apparaître dans le titre, le lieu, la description, l'année ou la catégorie, sans tenir compte des accents (extension Postgres `unaccent`, créée par `pnpm db:init`). Sur l'accueil, les résultats suivent la frappe ; sans JavaScript, c'est un simple formulaire.
+- **Couleur dominante** : calculée à l'envoi (sharp) et enregistrée dans `photos.color`. Chaque carte l'affiche pendant que la photo se charge, puis la photo apparaît en fondu. Pour les photos ajoutées avant cette colonne : `pnpm db:colors` (ou `db:colors:prod`), relançable sans risque.
 - **Stockage** : bucket privé. Les photos sont servies par des adresses signées (7 jours, arrondies au jour pour que le cache d'images reste efficace). Les fichiers sont rangés sous `prod/` ou `dev/` selon l'environnement.
 - **Administration** : un seul administrateur, session signée dans un cookie. Chaque page et chaque action serveur revérifient la session, le `proxy` n'est qu'une première barrière. Les essais de connexion répétés sont limités, et le site envoie une politique de sécurité de contenu (CSP) ainsi que les en-têtes de sécurité usuels.
 - **Application installable (PWA)** : manifeste (`public/manifest.webmanifest`) et service worker (`public/sw.js`, enregistré en production seulement). Sans réseau, une page qui ne peut pas se charger affiche `/hors-ligne`. Le service worker ne garde en cache que les fichiers de l'interface : jamais les photos, ni `/admin`. Si la page hors ligne change, modifier `VERSION` dans `public/sw.js`.
@@ -72,7 +79,7 @@ scripts/        db-init.mjs
 
 1. Ajouter les variables d'environnement. `DATABASE_URL` pointe vers la branche Neon `production` pour l'environnement Production et vers la branche `dev` pour Preview, jamais vers la production.
 2. Renseigner `NEXT_PUBLIC_SITE_URL` avec le vrai domaine.
-3. Avant le premier chargement en production, et après chaque ajout au schéma : `pnpm db:init:prod`. Le build, lui, ne touche jamais à la base.
+3. Avant le premier chargement en production, et après chaque ajout au schéma : `pnpm db:init:prod`, puis `pnpm db:colors:prod` si des photos n'ont pas encore de couleur. Le build, lui, ne touche jamais à la base.
 4. Une variable ajoutée ou modifiée demande un nouveau déploiement.
 
 Les fonctions sont placées à Francfort (`vercel.json`, région `fra1`), comme la base et le bucket.

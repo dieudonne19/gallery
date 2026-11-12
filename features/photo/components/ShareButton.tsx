@@ -1,13 +1,19 @@
 "use client"
 
+import { ShareIcon } from "lucide-react"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { ShareIcon } from "lucide-react"
+interface ShareButtonProps {
+  title: string
+  /** Adresse à partager (ex. /photos/ab12) ; par défaut, celle de la page. */
+  path?: string
+  className?: string
+}
 
-export function ShareButton({ title }: { title: string }) {
+/** Partage une adresse (feuille de partage du téléphone, sinon copie du lien). */
+export function ShareButton({ title, path, className }: ShareButtonProps) {
   async function share() {
-    const url = window.location.href
+    const url = path ? new URL(path, window.location.origin).href : window.location.href
     if (navigator.share) {
       try {
         await navigator.share({ title, url })
@@ -21,14 +27,14 @@ export function ShareButton({ title }: { title: string }) {
   }
 
   return (
-    <Button
+    <button
       type="button"
-      variant="link"
       onClick={share}
-      className="min-h-11 px-0 text-base text-foreground underline underline-offset-4"
+      aria-label={path ? `Partager « ${title} »` : "Partager"}
+      title="Partager"
+      className={className}
     >
-      <ShareIcon className="size-4" />
-      <span className="">Partager</span>
-    </Button>
+      <ShareIcon aria-hidden="true" className="size-5" />
+    </button>
   )
 }

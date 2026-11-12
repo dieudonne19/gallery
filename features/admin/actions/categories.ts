@@ -6,6 +6,7 @@ import { z } from "zod"
 import { slugify } from "@/features/categories/lib/slug"
 import { requireAdmin } from "@/lib/auth"
 import { sql } from "@/lib/db"
+import { isPermutationOf } from "../lib/same-order-set"
 
 export interface CategoryFormState {
   error?: string
@@ -69,18 +70,20 @@ export async function deleteCategory(id: string) {
   refreshPages()
 }
 
-export async function moveCategory(id: string, direction: "up" | "down") {
+/** Nouvel ordre des catégories (celui du filtre de l'accueil), enregistré en une requête. Mêmes règles que reorderPhotos. */
+export async function reorderCategories(ids: string[]): Promise<{ error?: string }> {
   await requireAdmin()
-  const rows = await sql`select id from categories order by position, created_at`
-  const ids = rows.map((r) => r.id as string)
-  const from = ids.indexOf(id)
-  const to = direction === "up" ? from - 1 : from + 1
-  if (from === -1 || to < 0 || to >= ids.length) return
+  const parsed = z.array(z.string().min(1).max(60)).max(500).safeParse(ids)
+  if (!parsed.success) return { error: "Ordre invalide." }
 
-  ;[ids[from], ids[to]] = [ids[to], ids[from]]
+  const rows = await sql`select id from categories`
+  if (!isPermutationOf(parsed.data, rows.map((r) => r.id as string))) {
+    return { error: "La liste a changé entre-temps. Rechargez la page puis recommencez." }
+  }
   await sql`
     update categories c set position = t.pos
-    from unnest(${ids}::text[]) with ordinality as t(id, pos)
+    from unnest(${parsed.data}::text[]) with ordinality as t(id, pos)
     where c.id = t.id`
   refreshPages()
+  return {}
 }

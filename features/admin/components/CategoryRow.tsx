@@ -1,24 +1,28 @@
 "use client"
 
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, GripVertical } from "lucide-react"
 import { useActionState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { AdminCategory } from "@/features/categories/lib/queries"
-import { deleteCategory, moveCategory, renameCategory, type CategoryFormState } from "../actions/categories"
+import { deleteCategory, renameCategory, type CategoryFormState } from "../actions/categories"
 import { ConfirmDeleteButton } from "./ConfirmDeleteButton"
 
 interface CategoryRowProps {
   category: AdminCategory
   isFirst: boolean
   isLast: boolean
+  /** Monter (-1) ou descendre (+1) d'un rang. */
+  onMove: (step: -1 | 1) => void
+  /** Poignée de glisser-déposer (voir useReorder). */
+  handleProps: React.ComponentProps<"button">
 }
 
 const photosLabel = (n: number) => (n === 0 ? "Aucune photo" : n === 1 ? "1 photo" : `${n} photos`)
 
-export function CategoryRow({ category, isFirst, isLast }: CategoryRowProps) {
+export function CategoryRow({ category, isFirst, isLast, onMove, handleProps }: CategoryRowProps) {
   const [state, formAction, pending] = useActionState<CategoryFormState, FormData>(
     renameCategory.bind(null, category.id),
     {},
@@ -28,32 +32,37 @@ export function CategoryRow({ category, isFirst, isLast }: CategoryRowProps) {
   const canDelete = category.photoCount === 0
 
   return (
-    <li className="flex flex-wrap items-start gap-x-4 gap-y-2 border-t border-border py-4">
+    <li data-sort-row className="flex flex-wrap items-start gap-x-4 gap-y-2 border-t border-border bg-background py-4">
       <div className="flex">
-        <form action={moveCategory.bind(null, category.id, "up")}>
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            disabled={isFirst}
-            aria-label={`Monter « ${category.label} »`}
-            className="size-11"
-          >
-            <ChevronUp />
-          </Button>
-        </form>
-        <form action={moveCategory.bind(null, category.id, "down")}>
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            disabled={isLast}
-            aria-label={`Descendre « ${category.label} »`}
-            className="size-11"
-          >
-            <ChevronDown />
-          </Button>
-        </form>
+        <button
+          type="button"
+          className="flex size-11 cursor-grab items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:cursor-grabbing"
+          {...handleProps}
+        >
+          <GripVertical aria-hidden="true" className="size-5" />
+        </button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={isFirst}
+          onClick={() => onMove(-1)}
+          aria-label={`Monter « ${category.label} »`}
+          className="size-11"
+        >
+          <ChevronUp />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={isLast}
+          onClick={() => onMove(1)}
+          aria-label={`Descendre « ${category.label} »`}
+          className="size-11"
+        >
+          <ChevronDown />
+        </Button>
       </div>
 
       <form action={formAction} className="flex min-w-64 flex-1 flex-col gap-1">

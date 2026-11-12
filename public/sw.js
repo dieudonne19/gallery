@@ -3,7 +3,7 @@
 // Jamais : les photos (adresses signées qui expirent), /admin, ni les requêtes qui modifient quelque chose.
 // shortcut: VERSION est écrite à la main ; la changer si la page hors ligne change. Les anciens fichiers /_next/static restent
 // en cache jusqu'à ce changement, ce qui est sans gravité pour un site de cette taille.
-const VERSION = "hitako-v1"
+const VERSION = "hitako-v2"
 const OFFLINE_URL = "/hors-ligne"
 
 self.addEventListener("install", (event) => {
