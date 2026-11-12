@@ -1,6 +1,7 @@
-import { ExpandIcon, MailIcon, MapPinIcon } from "lucide-react"
+import { ApertureIcon, ExpandIcon, MailIcon, MapPinIcon } from "lucide-react"
 import Link from "next/link"
 
+import { formatShooting } from "@/features/photos/lib/shooting"
 import type { Photo } from "@/features/photos/types"
 import { DetailImage } from "./DetailImage"
 import { ShareButton } from "./ShareButton"
@@ -25,6 +26,7 @@ export function PhotoDetail({ photo, headingLevel = 1 }: PhotoDetailProps) {
   const Heading = headingLevel === 1 ? "h1" : "h2"
   // Lieu et année sont facultatifs : on n'affiche que ce qui existe.
   const meta = [photo.place, photo.year].filter(Boolean).join(" · ")
+  const shooting = formatShooting(photo.shooting)
 
   return (
     <article className="mx-auto grid w-full max-w-[1100px] bg-card md:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] md:rounded-[32px] md:shadow-[0_1px_20px_rgb(0_0_0/0.1)]">
@@ -65,6 +67,21 @@ export function PhotoDetail({ photo, headingLevel = 1 }: PhotoDetailProps) {
               <MapPinIcon aria-hidden="true" className="size-4 shrink-0" />
               {meta}
             </p>
+          ) : null}
+          {shooting ? (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <ApertureIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              <p>
+                <span className="sr-only">Prise de vue : </span>
+                {shooting.settings}
+                {shooting.lens ? (
+                  <>
+                    {shooting.settings ? <br /> : null}
+                    {shooting.lens}
+                  </>
+                ) : null}
+              </p>
+            </div>
           ) : null}
         </div>
 

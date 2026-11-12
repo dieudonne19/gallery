@@ -6,6 +6,19 @@ export interface Category {
   label: string;
 }
 
+/** Réglages de prise de vue (tous facultatifs). */
+export interface ShootingInfo {
+  camera?: string;
+  lens?: string;
+  /** Focale, en millimètres. */
+  focalLength?: number;
+  /** Ouverture (le nombre f). */
+  aperture?: number;
+  /** Vitesse d'obturation, telle qu'on l'écrit : « 1/250 » ou « 2 » (secondes). */
+  exposureTime?: string;
+  iso?: number;
+}
+
 export interface Photo {
   id: string;
   src: string;
@@ -23,4 +36,6 @@ export interface Photo {
   place?: string;
   /** Facultatif : peut venir des données EXIF de la photo. */
   year?: number;
+  /** Réglages de prise de vue : lus seulement pour la grande vue et l'administration (getPhotoById). */
+  shooting?: ShootingInfo;
 }

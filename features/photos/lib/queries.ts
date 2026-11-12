@@ -2,7 +2,7 @@ import { cache } from "react";
 
 import { sql } from "@/lib/db";
 import { getPhotoUrl } from "@/lib/storage";
-import type { CategoryId, Photo } from "../types";
+import type { CategoryId, Photo, ShootingInfo } from "../types";
 import { encodeCursor, type PhotoCursor } from "./cursor";
 import { searchPatterns } from "./search";
 
@@ -146,12 +146,21 @@ export async function getPhotoDates(): Promise<{ id: string; createdAt: Date }[]
 // cache() : la page et ses métadonnées demandent la même photo, une seule requête par rendu.
 export const getPhotoById = cache(async (id: string): Promise<Photo | undefined> => {
   const rows = await sql`
-    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height, p.color
+    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height, p.color,
+           p.camera, p.lens, p.focal_length as "focalLength", p.aperture, p.exposure_time as "exposureTime", p.iso
     from photos p
     join categories c on c.id = p.category
     where p.id = ${id}`;
+  const [row] = rows;
+  if (!row) return undefined;
   const [photo] = await toPhotos(rows);
-  return photo;
+  // Réglages de prise de vue : seulement ceux qui sont renseignés.
+  const shooting: ShootingInfo = Object.fromEntries(
+    (["camera", "lens", "focalLength", "aperture", "exposureTime", "iso"] as const)
+      .map((key) => [key, row[key] ?? undefined])
+      .filter(([, value]) => value !== undefined),
+  );
+  return Object.keys(shooting).length ? { ...photo, shooting } : photo;
 });
 
 /**

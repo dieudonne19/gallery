@@ -45,9 +45,11 @@ export async function createPhoto(_: PhotoFormState, formData: FormData): Promis
   try {
     await uploadPhoto(key, image.bytes, image.contentType)
     await sql`
-      insert into photos (id, src, title, alt, category, place, year, position, width, height, color)
+      insert into photos (id, src, title, alt, category, place, year, position, width, height, color,
+                          camera, lens, focal_length, aperture, exposure_time, iso)
       values (${id}, ${key}, ${data.title}, ${data.alt}, ${data.category}, ${data.place}, ${data.year},
-              (select coalesce(min(position), 0) - 1 from photos), ${image.width}, ${image.height}, ${image.color})`
+              (select coalesce(min(position), 0) - 1 from photos), ${image.width}, ${image.height}, ${image.color},
+              ${data.camera}, ${data.lens}, ${data.focalLength}, ${data.aperture}, ${data.exposureTime}, ${data.iso})`
   } catch (error) {
     console.error("createPhoto failed", error)
     await deleteQuietly(key)
@@ -74,6 +76,8 @@ export async function updatePhoto(id: string, _: PhotoFormState, formData: FormD
       update photos
       set title = ${data.title}, alt = ${data.alt}, category = ${data.category},
           place = ${data.place}, year = ${data.year}, src = ${newSrc},
+          camera = ${data.camera}, lens = ${data.lens}, focal_length = ${data.focalLength}, aperture = ${data.aperture},
+          exposure_time = ${data.exposureTime}, iso = ${data.iso},
           width = coalesce(${image?.width ?? null}::int, width), height = coalesce(${image?.height ?? null}::int, height),
           color = coalesce(${image?.color ?? null}::text, color)
       where id = ${id}`

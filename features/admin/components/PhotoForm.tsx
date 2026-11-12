@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import type { Category, Photo } from "@/features/photos/types"
 import { resizeForUpload } from "../lib/resize-image"
-import type { PhotoField, PhotoFormState } from "../schemas"
+import { type ExifData, readExif } from "../lib/exif"
+import { SHOOTING_FIELDS, type PhotoField, type PhotoFormState } from "../schemas"
 
 interface PhotoFormProps {
   action: (state: PhotoFormState, formData: FormData) => Promise<PhotoFormState>
@@ -51,6 +52,45 @@ function Field({
   )
 }
 
+const SHOOTING_INPUTS: readonly {
+  name: (typeof SHOOTING_FIELDS)[number]
+  label: string
+  placeholder: string
+  inputMode?: "decimal" | "numeric"
+  maxLength: number
+}[] = [
+  { name: "camera", label: "Appareil", placeholder: "Fujifilm X-T4", maxLength: 80 },
+  { name: "lens", label: "Objectif", placeholder: "XF 23 mm F1.4", maxLength: 120 },
+  { name: "focalLength", label: "Focale (mm)", placeholder: "23", inputMode: "decimal", maxLength: 7 },
+  { name: "aperture", label: "Ouverture", placeholder: "f/8", inputMode: "decimal", maxLength: 7 },
+  { name: "exposureTime", label: "Vitesse (s)", placeholder: "1/250", maxLength: 10 },
+  { name: "iso", label: "ISO", placeholder: "200", inputMode: "numeric", maxLength: 7 },
+]
+
+const decimal = (value: number) => String(value).replace(".", ",")
+
+/**
+ * Remplit les champs de prise de vue avec l'EXIF de la photo choisie (et l'année, si elle est vide).
+ * Retourne vrai si au moins un réglage a été trouvé.
+ */
+function prefillFromExif(form: HTMLFormElement | null, exif: ExifData): boolean {
+  if (!form) return false
+  const set = (name: string, value: string | number | undefined, onlyIfEmpty = false) => {
+    const field = form.elements.namedItem(name)
+    if (!(field instanceof HTMLInputElement) || value === undefined) return
+    if (onlyIfEmpty && field.value.trim()) return
+    field.value = typeof value === "number" ? decimal(value) : value
+  }
+  set("camera", exif.camera)
+  set("lens", exif.lens)
+  set("focalLength", exif.focalLength)
+  set("aperture", exif.aperture)
+  set("exposureTime", exif.exposureTime)
+  set("iso", exif.iso)
+  set("year", exif.year ? String(exif.year) : undefined, true)
+  return SHOOTING_FIELDS.some((name) => exif[name] !== undefined)
+}
+
 export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
   const categoryItems = Object.fromEntries(categories.map((c) => [c.id, c.label]))
   const [state, formAction, pending] = useActionState(action, {})
@@ -64,6 +104,8 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
     if (!file) return setImageStatus({ preparing: false })
 
     setImageStatus({ preparing: true, message: "Préparation de la photo…" })
+    // Réglages de prise de vue : lus sur le fichier d'origine, avant que la réduction ne les efface (jamais le GPS).
+    const found = prefillFromExif(input.form, await file.arrayBuffer().then(readExif, () => ({})))
     const resized = await resizeForUpload(file)
     if (resized !== file) {
       const transfer = new DataTransfer()
@@ -71,7 +113,10 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
       input.files = transfer.files
     }
     const megabytes = (resized.size / 1048576).toFixed(1).replace(".", ",")
-    setImageStatus({ preparing: false, message: `Photo prête (${megabytes} Mo).` })
+    setImageStatus({
+      preparing: false,
+      message: `Photo prête (${megabytes} Mo).${found ? " Réglages de prise de vue repris de la photo : vérifiez-les plus bas." : ""}`,
+    })
   }
   const initial: Record<string, string> = {
     title: photo?.title ?? "",
@@ -79,6 +124,12 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
     category: photo?.category ?? "",
     place: photo?.place ?? "",
     year: photo?.year ? String(photo.year) : "",
+    camera: photo?.shooting?.camera ?? "",
+    lens: photo?.shooting?.lens ?? "",
+    focalLength: photo?.shooting?.focalLength ? decimal(photo.shooting.focalLength) : "",
+    aperture: photo?.shooting?.aperture ? decimal(photo.shooting.aperture) : "",
+    exposureTime: photo?.shooting?.exposureTime ?? "",
+    iso: photo?.shooting?.iso ? String(photo.shooting.iso) : "",
   }
   const value = (name: string) => state.values?.[name] ?? initial[name]
   const describe = (name: PhotoField, hint = false) =>
@@ -194,6 +245,30 @@ export function PhotoForm({ action, photo, categories }: PhotoFormProps) {
           />
         </Field>
       </div>
+
+      <fieldset className="flex flex-col gap-4">
+        <legend className="mb-1 font-semibold">Prise de vue (facultatif)</legend>
+        <p className="-mt-2 text-sm text-muted-foreground">
+          Repris automatiquement de la photo quand elle contient ces informations. Vérifiez, corrigez ou effacez.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {SHOOTING_INPUTS.map(({ name, label, placeholder, inputMode, maxLength }) => (
+            <Field key={name} name={name} label={label} error={errors[name]}>
+              <Input
+                id={name}
+                name={name}
+                defaultValue={value(name)}
+                placeholder={placeholder}
+                inputMode={inputMode}
+                maxLength={maxLength}
+                aria-invalid={errors[name] ? true : undefined}
+                aria-describedby={describe(name)}
+                className="h-11"
+              />
+            </Field>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="flex flex-wrap items-center gap-4">
         <Button type="submit" disabled={pending || imageStatus.preparing} className="h-11 px-6 text-base">

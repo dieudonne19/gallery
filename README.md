@@ -29,7 +29,7 @@ pnpm dev                                 # http://localhost:3000
 | `pnpm build` / `pnpm start` | Build et serveur de production |
 | `pnpm typecheck` | Vérification TypeScript |
 | `pnpm lint` | ESLint |
-| `pnpm test` | Tests (`node:test`) : session, mot de passe, adresses de catégories |
+| `pnpm test` | Tests (`node:test`) : session, mot de passe, adresses de catégories, mosaïque, curseur, recherche, EXIF, formulaire |
 | `pnpm db:init` | Applique `db/schema.sql` sur la base de développement |
 | `pnpm db:init:prod` | Même chose sur la base de production (`.env.production.local`) |
 | `pnpm db:colors` / `pnpm db:colors:prod` | Calcule la couleur dominante des photos qui n'en ont pas encore (à lancer une fois après `db:init`) |
@@ -63,10 +63,11 @@ scripts/        db-init.mjs
 
 ## Fonctionnement
 
-- **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus ; une photo qui contient des métadonnées EXIF est toujours réencodée, pour qu'aucune position GPS ne quitte le navigateur), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
 - **Apparence** : interface blanche et neutre façon mosaïque d'inspiration (thème sombre automatique), accent terracotta de Hitako. Tokens dans `app/globals.css`. En-tête collant qui se masque en descendant ; sur mobile, barre de navigation en bas. Animations en CSS (et View Transitions pour le changement de filtre), toutes coupées avec « réduire les animations ».
 - **Fenêtre des photos** : depuis le site, une photo s'ouvre dans une fenêtre par-dessus la page en cours (routes parallèle et interceptée : `app/(site)/(gallery)/@modal/(.)photos/[id]`). L'adresse devient `/photos/[id]` ; un rechargement ou un lien partagé affiche la page complète. Échap, ✕, un clic à côté ou le retour du navigateur la ferment ; ← et → passent aux photos voisines.
 - **Galerie par paquets** : le serveur rend les 24 premières photos ; les suivantes se chargent à l'approche du bas de la page (`features/photos/actions/load-more.ts`), avec un curseur sur l'ordre de la galerie (ni doublon ni trou si une photo est ajoutée entre-temps). Seules les URL du paquet affiché sont signées. Sans JavaScript, « Voir plus de photos » recharge la page avec un paquet de plus (`?page=`).
+- **Prise de vue** : appareil, objectif, focale, ouverture, vitesse et ISO, lus dans l'EXIF du fichier d'origine, dans le navigateur (`features/admin/lib/exif.ts`, sans dépendance, qui ne lit jamais le GPS), avant la réduction. Ils pré-remplissent le formulaire, restent modifiables et s'affichent dans la grande vue de la photo.
 - **Recherche** : barre de l'en-tête, adresse `/?q=` (combinable avec `?categorie=`, en `noindex`). Chaque mot doit apparaître dans le titre, le lieu, la description, l'année ou la catégorie, sans tenir compte des accents (extension Postgres `unaccent`, créée par `pnpm db:init`). Sur l'accueil, les résultats suivent la frappe ; sans JavaScript, c'est un simple formulaire.
 - **Couleur dominante** : calculée à l'envoi (sharp) et enregistrée dans `photos.color`. Chaque carte l'affiche pendant que la photo se charge, puis la photo apparaît en fondu. Pour les photos ajoutées avant cette colonne : `pnpm db:colors` (ou `db:colors:prod`), relançable sans risque.
 - **Stockage** : bucket privé. Les photos sont servies par des adresses signées (7 jours, arrondies au jour pour que le cache d'images reste efficace). Les fichiers sont rangés sous `prod/` ou `dev/` selon l'environnement.
