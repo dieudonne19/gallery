@@ -7,7 +7,7 @@ Mon portfolio de photographies de paysages, avec son espace d'administration. Je
 
 ## Technologies
 
-Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, GSAP, Lenis.
+Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui.
 Base de données et stockage des photos : Neon. Hébergement : Vercel.
 
 ## Démarrer en local
@@ -64,6 +64,7 @@ scripts/        db-init.mjs
 ## Fonctionnement
 
 - **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Apparence** : interface blanche et neutre façon mosaïque d'inspiration (thème sombre automatique), accent terracotta de Hitako. Tokens dans `app/globals.css`. En-tête collant qui se masque en descendant ; sur mobile, barre de navigation en bas. Animations en CSS (et View Transitions pour le changement de filtre), toutes coupées avec « réduire les animations ».
 - **Fenêtre des photos** : depuis le site, une photo s'ouvre dans une fenêtre par-dessus la page en cours (routes parallèle et interceptée : `app/(site)/(gallery)/@modal/(.)photos/[id]`). L'adresse devient `/photos/[id]` ; un rechargement ou un lien partagé affiche la page complète. Échap, ✕, un clic à côté ou le retour du navigateur la ferment ; ← et → passent aux photos voisines.
 - **Galerie par paquets** : le serveur rend les 24 premières photos ; les suivantes se chargent à l'approche du bas de la page (`features/photos/actions/load-more.ts`), avec un curseur sur l'ordre de la galerie (ni doublon ni trou si une photo est ajoutée entre-temps). Seules les URL du paquet affiché sont signées. Sans JavaScript, « Voir plus de photos » recharge la page avec un paquet de plus (`?page=`).
 - **Couleur dominante** : calculée à l'envoi (sharp) et enregistrée dans `photos.color`. Chaque carte l'affiche pendant que la photo se charge, puis la photo apparaît en fondu. Pour les photos ajoutées avant cette colonne : `pnpm db:colors` (ou `db:colors:prod`), relançable sans risque.

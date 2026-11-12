@@ -7,19 +7,21 @@ interface CategoryFilterProps {
   active?: CategoryId;
 }
 
-export const chip = "inline-flex min-h-11 shrink-0 items-center rounded-full border border-border px-[18px]";
+export const chip =
+  "inline-flex min-h-11 shrink-0 items-center rounded-full bg-secondary px-[18px] font-medium transition-colors hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_8%)]";
+const activeChip = "bg-foreground text-background hover:bg-foreground";
 
 export function CategoryFilter({ categories, active }: CategoryFilterProps) {
   return (
     <nav
       aria-label="Catégories"
-      // Mobile : centré s'il tient, sinon défile (marges auto sur les extrémités). Bureau : lignes centrées.
-      className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-center md:px-0 [&::-webkit-scrollbar]:hidden [&>:first-child]:ml-auto [&>:last-child]:mr-auto md:[&>:first-child]:ml-0 md:[&>:last-child]:mr-0"
+      // Une seule ligne, centrée si elle tient, sinon elle défile ; les bords s'estompent pour montrer qu'il y a une suite.
+      className="flex gap-2 overflow-x-auto px-4 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] [scrollbar-width:none] md:px-8 [&::-webkit-scrollbar]:hidden [&>:first-child]:ml-auto [&>:last-child]:mr-auto"
     >
       <Link
         href="/"
         aria-current={!active ? "page" : undefined}
-        className={cn(chip, !active && "border-foreground bg-foreground text-background")}
+        className={cn(chip, !active && activeChip)}
       >
         Tout
       </Link>
@@ -28,10 +30,7 @@ export function CategoryFilter({ categories, active }: CategoryFilterProps) {
           key={category.id}
           href={`/?categorie=${category.id}`}
           aria-current={active === category.id ? "page" : undefined}
-          className={cn(
-            chip,
-            active === category.id && "border-foreground bg-foreground text-background",
-          )}
+          className={cn(chip, active === category.id && activeChip)}
         >
           {category.label}
         </Link>

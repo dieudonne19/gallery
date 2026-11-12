@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Fraunces, Inter } from "next/font/google"
+import { Inter } from "next/font/google"
 
 import "./globals.css"
 import { RegisterServiceWorker } from "@/components/shared/RegisterServiceWorker"
@@ -9,7 +9,6 @@ import { baseOpenGraph, defaultShareImage } from "@/lib/metadata"
 import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site"
 
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-inter" })
-const fontSerif = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" })
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,7 +30,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#f6f3ec",
+  // Barre du navigateur (mobile) : la couleur du fond, en clair comme en sombre.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#121212" },
+  ],
 }
 
 export default function RootLayout({
@@ -42,7 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${fontSans.variable} ${fontSerif.variable} font-sans antialiased`}
+      className={`${fontSans.variable} font-sans antialiased`}
     >
       <head>
         {/* Sans JavaScript, les photos n'attendent pas de fondu (features/photos/components/FadeInImage.tsx). */}

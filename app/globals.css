@@ -1,46 +1,90 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Pas de thème sombre : la variante reste définie pour les composants shadcn, mais elle ne s'active jamais. */
-@custom-variant dark (&:is(.dark *));
+/* Thème sombre : suit le réglage du système. Les classes dark: des composants shadcn s'activent avec lui. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
-/* Thème de la maquette : beige chaud, encre vert-noir, accent terracotta. */
+/*
+ * Thème « mosaïque » : interface blanche et neutre, ce sont les photos qui portent la couleur.
+ * L'accent terracotta (bouton principal, focus) reste celui de Hitako.
+ * Contrastes vérifiés (WCAG AA) : texte 18,9:1, texte secondaire 6,4:1 (5,5:1 sur les pastilles), bordure des champs 3,4:1.
+ */
 :root {
-  --background: #f6f3ec;
-  --foreground: #1e2a2b;
-  --card: #f6f3ec;
-  --card-foreground: #1e2a2b;
-  --popover: #f6f3ec;
-  --popover-foreground: #1e2a2b;
+  --background: #ffffff;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
   --primary: #b4532a;
   --primary-foreground: #ffffff;
-  --secondary: #ece7db;
-  --secondary-foreground: #1e2a2b;
-  --muted: #ece7db;
-  --muted-foreground: #55605f;
-  --accent: #ece7db;
-  --accent-foreground: #1e2a2b;
+  /* Pastilles, boutons ronds, champ de recherche. */
+  --secondary: #efefef;
+  --secondary-foreground: #111111;
+  --muted: #efefef;
+  --muted-foreground: #5f5f5f;
+  --accent: #efefef;
+  --accent-foreground: #111111;
   --destructive: #b3261e;
-  --border: #d8d2c2;
+  --border: #e4e4e4;
   /* Bordure des champs : 3,4:1 sur le fond (seuil WCAG 1.4.11 = 3:1), contrairement aux séparateurs. */
-  --input: #8a8474;
+  --input: #8a8a8a;
   --ring: #b4532a;
   --radius: 0.5rem;
+  --shadow-card: 0 1px 20px rgb(0 0 0 / 0.1);
+  color-scheme: light dark;
+  /* Hauteur de l'en-tête collant : la barre des filtres se cale dessous. */
+  --header-h: 4rem;
+  /* Barre de navigation du bas, sur mobile. */
+  --bottom-nav-h: 4rem;
+}
+
+/* Sombre : texte 16,6:1, texte secondaire 7,9:1 (6:1 sur les pastilles), accent 6,3:1. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121212;
+    --foreground: #f1f1f1;
+    --card: #1e1e1e;
+    --card-foreground: #f1f1f1;
+    --popover: #1e1e1e;
+    --popover-foreground: #f1f1f1;
+    --primary: #e07a50;
+    --primary-foreground: #121212;
+    --secondary: #2b2b2b;
+    --secondary-foreground: #f1f1f1;
+    --muted: #262626;
+    --muted-foreground: #a8a8a8;
+    --accent: #2b2b2b;
+    --accent-foreground: #f1f1f1;
+    --destructive: #f2b8b5;
+    --border: #333333;
+    --input: #7a7a7a;
+    --ring: #e07a50;
+    --shadow-card: 0 1px 20px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Objet qui reste clair en thème sombre (carte postale de la page Contact). */
+.light-surface {
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #efefef;
+  --muted-foreground: #5f5f5f;
+  --border: #d9d4c7;
+  --input: #8a8a8a;
+  color: var(--foreground);
   color-scheme: light;
-  /* Hauteur du header fixe : le filtre sticky se cale dessous. */
-  --header-h: 3.5rem;
 }
 
 @media (min-width: 768px) {
   :root {
-    --header-h: 4rem;
+    --header-h: 5rem;
+    --bottom-nav-h: 0rem;
   }
 }
 
-
 @theme inline {
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-fraunces);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -81,50 +125,6 @@
   }
 }
 
-/* Entrée de la hero : fondu + léger décalage, échelonné par --i. Sans animation, le contenu reste visible. */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-reveal {
-    animation: hero-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(var(--i, 0) * 90ms);
-  }
-
-  @keyframes hero-reveal {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-  }
-}
-
-/* Bandeau défilant (WordsMarquee) : deux copies identiques, la piste glisse de -50 %. */
-@keyframes marquee-scroll {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee-track {
-  animation: marquee-scroll 130s linear infinite;
-}
-
-/* Pause au survol pour pouvoir lire. */
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
-/* Mouvement réduit : plus de défilement, les trois mots restent fixes et centrés. */
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-    width: 100%;
-    justify-content: center;
-  }
-  .marquee-copy:nth-child(2),
-  .marquee-extra {
-    display: none;
-  }
-}
-
 /* Barre de défilement : fine, noire, sans fond (la piste reprend la couleur de la page). */
 :root {
   scrollbar-width: thin;
@@ -155,21 +155,21 @@
 @keyframes card-in {
   from {
     opacity: 0;
-    transform: translateY(32px);
+    transform: translateY(16px);
   }
 }
 
 @keyframes card-image-settle {
   from {
-    transform: scale(1.12);
+    transform: scale(1.06);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Repli (navigateurs sans animation liée au défilement) : entrée échelonnée des six premières cartes. */
   .photo-card {
-    animation: card-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(min(var(--i, 0), 5) * 90ms);
+    animation: card-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(min(var(--i, 0), 7) * 50ms);
   }
 
   /* Navigateurs qui le gèrent : l'animation suit la carte pendant qu'elle entre par le bas de l'écran.
@@ -272,7 +272,7 @@
 @media (hover: hover) {
   @container (min-width: 600px) {
     .masonry-overlay {
-      display: flex;
+      display: block;
     }
   }
 }
@@ -302,5 +302,30 @@
   from {
     opacity: 0;
     transform: translateY(12px);
+  }
+}
+
+/* En-tête masqué pendant la descente (components/layout/HeaderOnScroll.tsx) : la barre des filtres monte avec lui. */
+.site-header,
+.sticky-under-header {
+  transition: transform 250ms ease-out;
+}
+[data-header-hidden] .site-header,
+[data-header-hidden] .sticky-under-header {
+  transform: translateY(calc(-1 * var(--header-h)));
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .sticky-under-header {
+    transition: none;
+  }
+}
+
+/* Changement de filtre : la mosaïque passe en fondu enchaîné (ViewTransition dans HomePage). */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

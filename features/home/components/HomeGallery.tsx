@@ -1,7 +1,6 @@
 import { ArrowDownWideNarrow, Images } from "lucide-react";
 import Link from "next/link";
 
-import { Eyebrow } from "@/components/shared/Eyebrow";
 import { getCategories } from "@/features/categories/lib/queries";
 import { getPhotoCount, getPhotoPage, PAGE_SIZE } from "@/features/photos/lib/queries";
 import { InfiniteGallery } from "./InfiniteGallery";
@@ -34,15 +33,15 @@ export async function HomeGallery({ category: requested, pages = 1 }: HomeGaller
     <section className="px-4 pb-16 pt-4 md:px-8 md:pb-24 md:pt-6">
       {/* Sur très grand écran, la mosaïque s'arrête à cinq colonnes confortables. */}
       <div className="mx-auto w-full max-w-[1800px]">
-        <div className="mb-4 flex justify-between">
-          <Eyebrow className="flex items-center gap-2 normal-case">
+        <div className="mb-3 flex justify-between">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Images aria-hidden="true" className="size-4" />
             {count} {count > 1 ? "photos" : "photo"}
-          </Eyebrow>
-          <Eyebrow className="flex items-center gap-2 normal-case">
+          </p>
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <ArrowDownWideNarrow aria-hidden="true" className="size-4" />
             plus récentes d’abord
-          </Eyebrow>
+          </p>
         </div>
         {photos.length > 0 ? (
           <InfiniteGallery

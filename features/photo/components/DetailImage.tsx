@@ -34,7 +34,7 @@ export function DetailImage({ photo }: { photo: Photo }) {
         {
           transformOrigin: "top left",
           transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`,
-          borderRadius: "12px",
+          borderRadius: "16px",
         },
         { transformOrigin: "top left", transform: "none", borderRadius: "0px" },
       ],

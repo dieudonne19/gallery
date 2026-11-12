@@ -75,11 +75,9 @@ export function PhotoModal({
     >
       <Dialog.Portal>
         <Dialog.Backdrop className="photo-modal-backdrop fixed inset-0 z-50 bg-black/60" />
-        {/* data-lenis-prevent : le défilement doux de la page ne doit pas agir derrière la fenêtre. */}
         <Dialog.Viewport
           ref={viewport}
           className="fixed inset-0 z-50 overflow-y-auto overscroll-contain"
-          data-lenis-prevent
         >
           <Dialog.Popup
             aria-labelledby={labelledBy}

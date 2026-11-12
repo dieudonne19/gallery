@@ -12,7 +12,7 @@ export function LegalPage({ title, updatedAt, children }: LegalPageProps) {
   return (
     <section className="px-4 pb-24 pt-8 md:px-16 md:pt-[72px]">
       <div className="max-w-2xl">
-        <h1 className="font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">{title}</h1>
+        <h1 className="text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">{title}</h1>
         <p className="mt-3 text-sm text-muted-foreground">Dernière mise à jour&nbsp;: {updatedAt}</p>
         <div className="mt-10 flex flex-col gap-10">{children}</div>
       </div>
@@ -23,7 +23,7 @@ export function LegalPage({ title, updatedAt, children }: LegalPageProps) {
 export function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="font-serif text-2xl font-normal leading-tight tracking-tight">{title}</h2>
+      <h2 className="text-2xl font-semibold leading-tight tracking-tight">{title}</h2>
       <div className="mt-3 flex flex-col gap-3 text-base leading-7">{children}</div>
     </section>
   );

@@ -18,7 +18,7 @@ export default async function Page() {
         <Eyebrow>
           {categories.length} {categories.length > 1 ? "catégories" : "catégorie"}
         </Eyebrow>
-        <h1 className="font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">Catégories</h1>
+        <h1 className="text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">Catégories</h1>
         <p className="max-w-xl text-muted-foreground">
           Elles servent de filtre sur l’accueil et classent chaque photo. L’ordre ci-dessous est celui du filtre.
         </p>

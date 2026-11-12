@@ -15,7 +15,7 @@ export default async function Page() {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-3">
           <Eyebrow>{photos.length} photos</Eyebrow>
-          <h1 className="font-serif text-[28px] font-normal leading-[1.1] tracking-tight md:text-4xl">Photos</h1>
+          <h1 className="text-[28px] font-semibold leading-tight tracking-tight md:text-4xl">Photos</h1>
         </div>
         <Button
           nativeButton={false}
