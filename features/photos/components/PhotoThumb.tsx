@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { cardRatio } from "../lib/masonry";
 import { FadeInImage } from "./FadeInImage";
+import { ThumbLink } from "./ThumbLink";
 import type { Photo } from "../types";
 
 interface PhotoThumbProps {
@@ -19,8 +19,9 @@ const SIZES = "(min-width: 1460px) 20vw, (min-width: 1060px) 25vw, (min-width: 6
 export function PhotoThumb({ photo, index = 0, priority = false, className }: PhotoThumbProps) {
   return (
     <figure className={cn("photo-card flex flex-col", className)} style={{ "--i": index } as React.CSSProperties}>
-      <Link
+      <ThumbLink
         href={`/photos/${photo.id}`}
+        photoId={photo.id}
         // Couleur dominante de la photo en attendant qu'elle se charge (bg-muted si elle n'est pas connue).
         style={{ aspectRatio: cardRatio(photo), backgroundColor: photo.color }}
         className="group relative isolate block overflow-hidden rounded-xl bg-muted"
@@ -40,7 +41,7 @@ export function PhotoThumb({ photo, index = 0, priority = false, className }: Ph
           <span>{photo.title}</span>
           <span className="text-xs font-medium uppercase tracking-[0.12em]">Voir</span>
         </span>
-      </Link>
+      </ThumbLink>
       {/* Grille étroite (mobile) : pas de survol, la légende reste visible. Hauteur fixe : la mosaïque en tient compte. */}
       <figcaption className="masonry-caption justify-between gap-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
         <span className="truncate">{photo.place ?? photo.title}</span>

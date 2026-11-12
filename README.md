@@ -53,7 +53,7 @@ Le modèle est `.env.example`. Les fichiers `.env*.local` ne sont jamais commit�
 ## Organisation du code
 
 ```
-app/            routes, volontairement fines : (site) public, admin, robots, sitemap, aperçu de partage
+app/            routes, volontairement fines : (site) public (dont (gallery) : accueil, photos et leur fenêtre), admin, robots, sitemap
 features/       une fonctionnalité par dossier : home, photo, photos, categories, admin, contact, about, legal
 components/     layout, éléments partagés, composants shadcn/ui
 lib/            base de données, session, stockage, métadonnées
@@ -64,6 +64,7 @@ scripts/        db-init.mjs
 ## Fonctionnement
 
 - **Photos** : réduites dans le navigateur avant l'envoi (2 000 px au plus), puis revérifiées et converties en WebP par le serveur (sharp), qui efface aussi les métadonnées, GPS compris. Le serveur refuse tout fichier de plus de 4 Mo : Vercel limite les requêtes à 4,5 Mo.
+- **Fenêtre des photos** : depuis le site, une photo s'ouvre dans une fenêtre par-dessus la page en cours (routes parallèle et interceptée : `app/(site)/(gallery)/@modal/(.)photos/[id]`). L'adresse devient `/photos/[id]` ; un rechargement ou un lien partagé affiche la page complète. Échap, ✕, un clic à côté ou le retour du navigateur la ferment ; ← et → passent aux photos voisines.
 - **Couleur dominante** : calculée à l'envoi (sharp) et enregistrée dans `photos.color`. Chaque carte l'affiche pendant que la photo se charge, puis la photo apparaît en fondu. Pour les photos ajoutées avant cette colonne : `pnpm db:colors` (ou `db:colors:prod`), relançable sans risque.
 - **Stockage** : bucket privé. Les photos sont servies par des adresses signées (7 jours, arrondies au jour pour que le cache d'images reste efficace). Les fichiers sont rangés sous `prod/` ou `dev/` selon l'environnement.
 - **Administration** : un seul administrateur, session signée dans un cookie. Chaque page et chaque action serveur revérifient la session, le `proxy` n'est qu'une première barrière. Les essais de connexion répétés sont limités, et le site envoie une politique de sécurité de contenu (CSP) ainsi que les en-têtes de sécurité usuels.

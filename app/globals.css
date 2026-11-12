@@ -276,3 +276,31 @@
     }
   }
 }
+
+/* Fenêtre d'une photo (features/photo/components/PhotoModal.tsx). La photo elle-même s'agrandit depuis
+   la carte cliquée (DetailImage) ; ici, seuls le fond et les informations apparaissent en fondu. */
+@media (prefers-reduced-motion: no-preference) {
+  .photo-modal-backdrop {
+    transition: opacity 250ms ease-out;
+  }
+  .photo-modal-backdrop[data-starting-style],
+  .photo-modal-backdrop[data-ending-style] {
+    opacity: 0;
+  }
+  .photo-modal {
+    transition: opacity 200ms ease-in;
+  }
+  .photo-modal[data-ending-style] {
+    opacity: 0;
+  }
+  .photo-modal .photo-detail-info {
+    animation: detail-info-in 350ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes detail-info-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
