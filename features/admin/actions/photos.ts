@@ -4,11 +4,13 @@ import { randomBytes } from "node:crypto"
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { z } from "zod"
 
 import { requireAdmin } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { deletePhotoFile, uploadPhoto } from "@/lib/storage"
 import { readImage } from "../lib/image"
+import { isPermutationOf } from "../lib/same-order-set"
 import { parsePhotoForm, type PhotoFormState } from "../schemas"
 
 // Dev et prod partagent le même bucket : le préfixe évite de mélanger leurs fichiers.
@@ -133,18 +135,30 @@ export async function deletePhoto(id: string) {
   refreshPages()
 }
 
-export async function movePhoto(id: string, direction: "up" | "down") {
-  await requireAdmin()
-  const rows = await sql`select id from photos order by position, created_at desc`
-  const ids = rows.map((r) => r.id as string)
-  const from = ids.indexOf(id)
-  const to = direction === "up" ? from - 1 : from + 1
-  if (from === -1 || to < 0 || to >= ids.length) return
+const orderSchema = z.array(z.string().min(1).max(40)).max(10_000)
 
-  ;[ids[from], ids[to]] = [ids[to], ids[from]]
+export interface ReorderResult {
+  error?: string
+}
+
+/**
+ * Nouvel ordre de toutes les photos (glisser-déposer ou flèches dans l'administration), enregistré en une requête.
+ * La liste doit reprendre exactement les photos existantes : sinon (photo ajoutée ou supprimée entre-temps), rien ne change.
+ */
+export async function reorderPhotos(ids: string[]): Promise<ReorderResult> {
+  await requireAdmin()
+  const parsed = orderSchema.safeParse(ids)
+  if (!parsed.success) return { error: "Ordre invalide." }
+
+  const rows = await sql`select id from photos`
+  if (!isPermutationOf(parsed.data, rows.map((r) => r.id as string))) {
+    return { error: "La liste a changé entre-temps. Rechargez la page puis recommencez." }
+  }
+  // Une seule instruction : les positions changent toutes ensemble, ou pas du tout.
   await sql`
     update photos p set position = t.pos
-    from unnest(${ids}::text[]) with ordinality as t(id, pos)
+    from unnest(${parsed.data}::text[]) with ordinality as t(id, pos)
     where p.id = t.id`
   refreshPages()
+  return {}
 }
