@@ -1,6 +1,9 @@
+import { Suspense } from "react";
+
 import type { Photo } from "@/features/photos/types";
 import { PhotoDetail } from "./PhotoDetail";
 import { PhotoNav } from "./PhotoNav";
+import { RelatedPhotos, RelatedPhotosSkeleton } from "./RelatedPhotos";
 
 interface PhotoPageProps {
   photo: Photo;
@@ -16,6 +19,9 @@ export function PhotoPage({ photo, prev, next }: PhotoPageProps) {
         <PhotoDetail photo={photo} />
       </div>
       <PhotoNav prev={prev} next={next} />
+      <Suspense fallback={<RelatedPhotosSkeleton />}>
+        <RelatedPhotos photoId={photo.id} />
+      </Suspense>
     </>
   );
 }

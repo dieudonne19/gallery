@@ -60,6 +60,26 @@ export async function getPhotoById(id: string): Promise<Photo | undefined> {
   return (await getAllPhotos()).find((p) => p.id === id);
 }
 
+/**
+ * Photos proches d'une photo, pour « Plus de photos comme celle-ci » : d'abord la même catégorie,
+ * puis le même lieu, puis la même année, et les plus récentes pour compléter. La photo elle-même est exclue.
+ */
+export async function getRelatedPhotos(id: string, limit = 12): Promise<Photo[]> {
+  const rows = await sql`
+    select p.id, p.src, p.title, p.alt, p.category, c.label as "categoryLabel", p.place, p.year, p.width, p.height, p.color
+    from photos p
+    join categories c on c.id = p.category
+    cross join (select category, place, year from photos where id = ${id}) t
+    where p.id <> ${id}
+    order by
+      (case when p.category = t.category then 4 else 0 end)
+        + (case when p.place is not null and p.place = t.place then 2 else 0 end)
+        + (case when p.year = t.year then 1 else 0 end) desc,
+      p.position, p.created_at desc
+    limit ${limit}`;
+  return Promise.all((rows as PhotoRow[]).map(toPhoto));
+}
+
 /** Photo précédente et suivante (la liste boucle). */
 export async function getAdjacentPhotos(id: string): Promise<{ prev: Photo; next: Photo } | null> {
   const photos = await getAllPhotos();

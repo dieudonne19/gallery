@@ -41,8 +41,8 @@ function NavItem({
 
 export function PhotoNav({ prev, next }: PhotoNavProps) {
   return (
-    <nav aria-label="Photos voisines" className="px-4 pb-16 md:px-16 md:pb-32">
-      <div className="grid grid-cols-2 gap-3 border-t border-border pt-6 md:gap-8 md:pt-10">
+    <nav aria-label="Photos voisines" className="mx-auto mt-6 w-full max-w-[1100px] px-4 md:mt-10 md:px-0">
+      <div className="grid grid-cols-2 gap-3 md:gap-8">
         <NavItem photo={prev} label="← Précédente" align="start" />
         <NavItem photo={next} label="Suivante →" align="end" />
       </div>
